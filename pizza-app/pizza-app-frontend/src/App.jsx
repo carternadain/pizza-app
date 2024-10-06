@@ -1,19 +1,18 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PizzaList from './components/PizzaList';
 import ToppingsList from './components/ToppingsList';
-import App from './App';
 
 function App() {
   return (
     <Router>
       <div>
-        <Switch>
-          <Route path="/pizzas" component={PizzaList} />
-          <Route path="/toppings" component={ToppingsList} />
-          <Route exact path="/" render={() => <h1>Welcome to Pizza App</h1>} />
-          <Route path="*" render={() => <h1>404 - Page Not Found</h1>} />
-        </Switch>
+        <Routes>
+          <Route path="/pizzas" element={<PizzaList />} />
+          <Route path="/toppings" element={<ToppingsList />} />
+          <Route path="/" element={<h1>Welcome to the Pizza App</h1>} />
+          <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+        </Routes>
       </div>
     </Router>
   );
