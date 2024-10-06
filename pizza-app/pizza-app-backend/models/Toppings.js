@@ -1,11 +1,20 @@
 const mongoose = require('mongoose');
 
-const ToppingSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true // Ensures no duplicate toppings
-  }
+const toppingSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true, // Prevent duplicate toppings in the database
+        trim: true,
+        minlength: 1,  // Minimum length
+        maxlength: 50  // Maximum length
+    }
 });
 
-module.exports = mongoose.model('Topping', ToppingSchema);
+// Optional: Custom static method to find topping by name
+toppingSchema.statics.findByName = function(name) {
+    return this.findOne({ name });
+};
+
+const Topping = mongoose.model('Topping', toppingSchema);
+module.exports = Topping;

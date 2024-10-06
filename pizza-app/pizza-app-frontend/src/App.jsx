@@ -11,9 +11,16 @@ function App() {
         <Link to="/toppings">Toppings</Link>
       </nav>
       <Routes>
-        <Route path="/pizzas" element={<PizzaList />} />
-        <Route path="/toppings" element={<ToppingsList />} />
+        {/* Home Page Route */}
         <Route path="/" element={<h1>Welcome to Pizza App</h1>} />
+        
+        {/* Pizza List Route */}
+        <Route path="/pizzas" element={<PizzaList />} />
+        
+        {/* Toppings List Route */}
+        <Route path="/toppings" element={<ToppingsList />} />
+        
+        {/* Catch-all Route for 404 */}
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
     </Router>

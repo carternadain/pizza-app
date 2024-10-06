@@ -1,49 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import { getToppings, addTopping, deleteTopping } from '../services/toppingService';
+import axios from 'axios';
 
-function ToppingsManager() {
-  const [toppings, setToppings] = useState([]);
-  const [newTopping, setNewTopping] = useState("");
+const ToppingManager = () => {
+    const [toppings, setToppings] = useState([]);
+    const [newTopping, setNewTopping] = useState('');
+    const [editTopping, setEditTopping] = useState({ id: '', name: '' });
 
-  useEffect(() => {
-    loadToppings();
-  }, []);
+    useEffect(() => {
+        // Fetch toppings on component mount
+        fetchToppings();
+    }, []);
 
-  const loadToppings = async () => {
-    const data = await getToppings();
-    setToppings(data);
-  };
+    const fetchToppings = async () => {
+        try {
+            const response = await axios.get('/api/toppings');
+            setToppings(response.data);
+        } catch (error) {
+            console.error('Error fetching toppings', error);
+        }
+    };
 
-  const handleAddTopping = async () => {
-    if (!newTopping) return;
-    await addTopping({ name: newTopping });
-    setNewTopping('');
-    loadToppings();
-  };
+    const addTopping = async () => {
+        try {
+            await axios.post('/api/toppings', { name: newTopping });
+            fetchToppings(); // Refresh the list
+            setNewTopping(''); // Clear input
+        } catch (error) {
+            console.error('Error adding topping', error);
+        }
+    };
 
-  const handleDeleteTopping = async (id) => {
-    await deleteTopping(id);
-    loadToppings();
-  };
+    const deleteTopping = async (id) => {
+        try {
+            await axios.delete(`/api/toppings/${id}`);
+            fetchToppings(); // Refresh the list
+        } catch (error) {
+            console.error('Error deleting topping', error);
+        }
+    };
 
-  return (
-    <div>
-      <h2>Manage Toppings</h2>
-      <ul>
-        {toppings.map(topping => (
-          <li key={topping._id}>
-            {topping.name} <button onClick={() => handleDeleteTopping(topping._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-      <input 
-        value={newTopping} 
-        onChange={(e) => setNewTopping(e.target.value)} 
-        placeholder="Add new topping" 
-      />
-      <button onClick={handleAddTopping}>Add Topping</button>
-    </div>
-  );
-}
+    const updateTopping = async () => {
+        try {
+            await axios.put(`/api/toppings/${editTopping.id}`, { name: editTopping.name });
+            fetchToppings(); // Refresh the list
+            setEditTopping({ id: '', name: '' }); // Clear input
+        } catch (error) {
+            console.error('Error updating topping', error);
+        }
+    };
 
-export default ToppingsManager;
+    return (
+        <div>
+            <h1>Manage Toppings</h1>
+
+            {/* Add new topping */}
+            <input 
+                type="text" 
+                value={newTopping} 
+                onChange={(e) => setNewTopping(e.target.value)} 
+                placeholder="New Topping"
+            />
+            <button onClick={addTopping}>Add Topping</button>
+
+            {/* List of toppings */}
+            <ul>
+                {toppings.map((topping) => (
+                    <li key={topping._id}>
+                        {topping.name} 
+                        <button onClick={() => deleteTopping(topping._id)}>Delete</button>
+                        <button onClick={() => setEditTopping({ id: topping._id, name: topping.name })}>Edit</button>
+                    </li>
+                ))}
+            </ul>
+
+            {/* Update existing topping */}
+            {editTopping.id && (
+                <div>
+                    <input 
+                        type="text" 
+                        value={editTopping.name} 
+                        onChange={(e) => setEditTopping({ ...editTopping, name: e.target.value })} 
+                    />
+                    <button onClick={updateTopping}>Update Topping</button>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default ToppingManager;

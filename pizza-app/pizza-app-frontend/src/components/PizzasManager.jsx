@@ -6,6 +6,7 @@ function PizzasManager() {
   const [pizzas, setPizzas] = useState([]);
   const [toppings, setToppings] = useState([]);
   const [newPizza, setNewPizza] = useState({ name: '', toppings: [] });
+  const [editPizza, setEditPizza] = useState({ id: '', name: '', toppings: [] });
 
   useEffect(() => {
     loadPizzas();
@@ -34,23 +35,18 @@ function PizzasManager() {
     loadPizzas();
   };
 
-  const handleUpdatePizza = async (pizza) => {
-    await updatePizza(pizza._id, pizza);
+  const handleUpdatePizza = async () => {
+    if (!editPizza.name) return;
+    await updatePizza(editPizza.id, { name: editPizza.name, toppings: editPizza.toppings });
+    setEditPizza({ id: '', name: '', toppings: [] });
     loadPizzas();
   };
 
   return (
     <div>
       <h2>Manage Pizzas</h2>
-      <ul>
-        {pizzas.map(pizza => (
-          <li key={pizza._id}>
-            {pizza.name} ({pizza.toppings.join(', ')})
-            <button onClick={() => handleDeletePizza(pizza._id)}>Delete</button>
-            <button onClick={() => handleUpdatePizza(pizza)}>Update</button>
-          </li>
-        ))}
-      </ul>
+
+      {/* Add new pizza */}
       <input 
         value={newPizza.name} 
         onChange={(e) => setNewPizza({ ...newPizza, name: e.target.value })} 
@@ -62,12 +58,12 @@ function PizzasManager() {
           <div key={topping._id}>
             <input 
               type="checkbox" 
-              value={topping.name}
+              checked={newPizza.toppings.includes(topping.name)}
               onChange={(e) => {
                 const checked = e.target.checked;
                 const newToppings = checked
-                  ? [...newPizza.toppings, e.target.value]
-                  : newPizza.toppings.filter(t => t !== e.target.value);
+                  ? [...newPizza.toppings, topping.name]
+                  : newPizza.toppings.filter(t => t !== topping.name);
                 setNewPizza({ ...newPizza, toppings: newToppings });
               }} 
             />
@@ -76,6 +72,49 @@ function PizzasManager() {
         ))}
       </div>
       <button onClick={handleAddPizza}>Add Pizza</button>
+
+      {/* List of pizzas */}
+      <ul>
+        {pizzas.map(pizza => (
+          <li key={pizza._id}>
+            {pizza.name} ({pizza.toppings.join(', ')})
+            <button onClick={() => handleDeletePizza(pizza._id)}>Delete</button>
+            <button onClick={() => setEditPizza({ id: pizza._id, name: pizza.name, toppings: pizza.toppings })}>Edit</button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Update existing pizza */}
+      {editPizza.id && (
+        <div>
+          <h3>Update Pizza</h3>
+          <input 
+            type="text" 
+            value={editPizza.name} 
+            onChange={(e) => setEditPizza({ ...editPizza, name: e.target.value })} 
+          />
+          <div>
+            <h3>Select Toppings:</h3>
+            {toppings.map(topping => (
+              <div key={topping._id}>
+                <input 
+                  type="checkbox" 
+                  checked={editPizza.toppings.includes(topping.name)}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    const newToppings = checked
+                      ? [...editPizza.toppings, topping.name]
+                      : editPizza.toppings.filter(t => t !== topping.name);
+                    setEditPizza({ ...editPizza, toppings: newToppings });
+                  }} 
+                />
+                {topping.name}
+              </div>
+            ))}
+          </div>
+          <button onClick={handleUpdatePizza}>Update Pizza</button>
+        </div>
+      )}
     </div>
   );
 }

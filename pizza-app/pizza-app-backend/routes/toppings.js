@@ -1,44 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const Topping = require('../models/Toppings');
+const toppingController = require('../controllers/toppingController');
 
 // Get all toppings
-router.get('/', async (req, res) => {
-  try {
-    const toppings = await Topping.find();
-    res.json(toppings);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get('/', toppingController.getToppings);
+
+// Get a topping by ID
+router.get('/:id', toppingController.getToppingById); // New route added
 
 // Add a new topping
-router.post('/', async (req, res) => {
-  const topping = new Topping({
-    name: req.body.name
-  });
+router.post('/', toppingController.addTopping);
 
-  try {
-    const newTopping = await topping.save();
-    res.status(201).json(newTopping);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+// Update a topping
+router.put('/:id', toppingController.updateTopping);
 
 // Delete a topping
-router.delete('/:id', async (req, res) => {
-  try {
-    const topping = await Topping.findById(req.params.id);
-    if (!topping) {
-      return res.status(404).json({ message: 'Topping not found' });
-    }
-
-    await topping.remove();
-    res.json({ message: 'Topping deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.delete('/:id', toppingController.deleteTopping);
 
 module.exports = router;
