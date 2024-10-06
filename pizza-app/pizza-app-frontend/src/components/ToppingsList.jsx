@@ -1,32 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function ToppingsList() {
+const ToppingsList = () => {
   const [toppings, setToppings] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('/api/toppings') // Ensure this API endpoint is correct
-      .then(response => setToppings(response.data))
-      .catch(error => console.error('Error fetching toppings:', error));
+    // Fetch toppings from the backend API
+    axios.get('http://localhost:5000/api/toppings')
+      .then((response) => {
+        console.log('API Response:', response.data);
+        setToppings(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching toppings:', error);
+        setError('Failed to fetch toppings. Please try again later.');
+      });
   }, []);
 
-  const handleAddTopping = (newTopping) => {
-    axios.post('/api/toppings', { name: newTopping })
-      .then(() => setToppings([...toppings, newTopping]))
-      .catch(error => console.error('Error adding topping:', error));
-  };
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (!toppings.length) {
+    return <div>No toppings available</div>;
+  }
 
   return (
     <div>
-      <h2>Toppings List</h2>
+      <h2>Available Toppings</h2>
       <ul>
-        {toppings.map(topping => (
-          <li key={topping.id}>{topping.name}</li>
+        {toppings.map((topping) => (
+          <li key={topping.id}>
+            {topping.name}
+          </li>
         ))}
       </ul>
-      <button onClick={() => handleAddTopping('New Topping')}>Add Topping</button>
     </div>
   );
-}
+};
 
 export default ToppingsList;
