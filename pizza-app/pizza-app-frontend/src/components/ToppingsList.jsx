@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';  // Import Bootstrap CSS
 const ToppingsList = () => {
   const [toppings, setToppings] = useState([]);
   const [newTopping, setNewTopping] = useState('');
-  const [editingTopping, setEditingTopping] = useState(null);
+  const [editingTopping, setEditingTopping] = useState(null); // Store the ID of the topping being edited
   const [updatedTopping, setUpdatedTopping] = useState('');
 
   useEffect(() => {
@@ -15,8 +15,21 @@ const ToppingsList = () => {
   }, []);
 
   const addTopping = () => {
-    if (newTopping.trim() === '') return;
+    // Trim the input and check for duplicates (case-insensitive)
+    const formattedTopping = newTopping.trim().toLowerCase();
+    const isDuplicate = toppings.some((topping) => topping.name.toLowerCase() === formattedTopping);
 
+    if (formattedTopping === '') {
+      alert("Topping name can't be empty.");
+      return;
+    }
+
+    if (isDuplicate) {
+      alert("This topping already exists. Please enter a different topping.");
+      return;  // Stop the function if it's a duplicate
+    }
+
+    // If it's not a duplicate, proceed with the fetch request to add the topping
     fetch('http://localhost:5000/api/toppings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -25,7 +38,7 @@ const ToppingsList = () => {
       .then((response) => response.json())
       .then((data) => {
         setToppings([...toppings, data]);
-        setNewTopping('');
+        setNewTopping('');  // Clear input after adding
       })
       .catch((error) => console.error('Error adding topping:', error));
   };
@@ -43,7 +56,7 @@ const ToppingsList = () => {
         setToppings(toppings.map((topping) =>
           topping._id === id ? { ...topping, name: updatedTopping } : topping
         ));
-        setEditingTopping(null);
+        setEditingTopping(null);  // Reset editing mode after updating
         setUpdatedTopping('');
       })
       .catch((error) => console.error('Error updating topping:', error));
@@ -81,11 +94,11 @@ const ToppingsList = () => {
       <ul className="list-group">
         {toppings.map((topping) => (
           <li className="list-group-item d-flex justify-content-between align-items-center" key={topping._id}>
-            {editingTopping === topping.id ? (
+            {editingTopping === topping._id ? (
               <>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control me-2"
                   value={updatedTopping}
                   onChange={(e) => setUpdatedTopping(e.target.value)}
                   placeholder="Update topping"
@@ -98,7 +111,13 @@ const ToppingsList = () => {
               <>
                 {topping.name}
                 <div>
-                  <button className="btn btn-warning btn-sm me-2" onClick={() => setEditingTopping(topping.id)}>
+                  <button
+                    className="btn btn-warning btn-sm me-2"
+                    onClick={() => {
+                      setEditingTopping(topping._id); // 
+                      setUpdatedTopping(topping.name); //
+                    }}
+                  >
                     Edit
                   </button>
                   <button className="btn btn-danger btn-sm" onClick={() => deleteTopping(topping._id)}>
