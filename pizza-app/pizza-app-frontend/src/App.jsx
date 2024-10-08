@@ -28,7 +28,7 @@ function App() {
 
       {/* Routes */}
       <Routes>
-        {/* Home Page Route */}
+        {/* Home Page Route update */}
         <Route 
           path="/" 
           element={
