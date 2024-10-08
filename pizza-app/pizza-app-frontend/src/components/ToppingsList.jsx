@@ -1,5 +1,5 @@
-// src/components/ToppingsList.jsx
 import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';  // Import Bootstrap CSS
 
 const ToppingsList = () => {
   const [toppings, setToppings] = useState([]);
@@ -7,19 +7,13 @@ const ToppingsList = () => {
   const [editingTopping, setEditingTopping] = useState(null);
   const [updatedTopping, setUpdatedTopping] = useState('');
 
-  // Fetch existing toppings from the backend
-  // Fetch existing toppings from the backend
   useEffect(() => {
     fetch('http://localhost:5000/api/toppings')
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data); // Log the fetched data
-        setToppings(data); // Assuming 'data' is an array of toppings
-      })
+      .then((data) => setToppings(data))
       .catch((error) => console.error('Error fetching toppings:', error));
   }, []);
 
-  // Add a new topping
   const addTopping = () => {
     if (newTopping.trim() === '') return;
 
@@ -28,12 +22,7 @@ const ToppingsList = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newTopping }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
         setToppings([...toppings, data]);
         setNewTopping('');
@@ -41,90 +30,81 @@ const ToppingsList = () => {
       .catch((error) => console.error('Error adding topping:', error));
   };
 
-  // Update an existing topping
   const updateTopping = (id) => {
-    if (!id) {
-      console.error('Topping ID is undefined. Cannot update topping.');
-      return;
-    }
-    
-    if (updatedTopping.trim() === '') return;
+    if (!id || updatedTopping.trim() === '') return;
 
     fetch(`http://localhost:5000/api/toppings/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: updatedTopping }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then(() => {
-        setToppings(toppings.map((topping) => 
+        setToppings(toppings.map((topping) =>
           topping._id === id ? { ...topping, name: updatedTopping } : topping
         ));
         setEditingTopping(null);
         setUpdatedTopping('');
       })
-      .catch((error) => {
-        console.error('Error updating topping:', error);
-        alert('Failed to update topping. Please try again later.');
-      });
+      .catch((error) => console.error('Error updating topping:', error));
   };
 
-  // Delete a topping
   const deleteTopping = (id) => {
-    if (!id) {
-      console.error('Topping ID is undefined. Cannot delete topping.');
-      return;
-    }
+    if (!id) return;
 
     fetch(`http://localhost:5000/api/toppings/${id}`, { method: 'DELETE' })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+      .then(() => {
         setToppings(toppings.filter((topping) => topping._id !== id));
       })
       .catch((error) => console.error('Error deleting topping:', error));
   };
 
   return (
-    <div>
-      <h2>Manage Toppings</h2>
+    <div className="container my-4">
+      <h2 className="text-center mb-4">Manage Toppings</h2>
 
       {/* Form to add a new topping */}
-      <div>
+      <div className="input-group mb-3">
         <input
           type="text"
+          className="form-control"
           value={newTopping}
           onChange={(e) => setNewTopping(e.target.value)}
           placeholder="Add new topping"
         />
-        <button onClick={addTopping}>Add Topping</button>
+        <button className="btn btn-primary" onClick={addTopping}>
+          Add Topping
+        </button>
       </div>
 
       {/* List of existing toppings */}
-      <ul>
+      <ul className="list-group">
         {toppings.map((topping) => (
-          <li key={topping._id}> {/* Ensure unique key for each topping */}
+          <li className="list-group-item d-flex justify-content-between align-items-center" key={topping._id}>
             {editingTopping === topping.id ? (
               <>
                 <input
                   type="text"
+                  className="form-control"
                   value={updatedTopping}
                   onChange={(e) => setUpdatedTopping(e.target.value)}
                   placeholder="Update topping"
                 />
-                  <button onClick={() => updateTopping(topping._id)}>Update</button>
+                <button className="btn btn-success btn-sm" onClick={() => updateTopping(topping._id)}>
+                  Update
+                </button>
               </>
             ) : (
               <>
                 {topping.name}
-                <button onClick={() => setEditingTopping(topping.id)}>Edit</button>
-                <button onClick={() => deleteTopping(topping._id)}>Delete</button>
+                <div>
+                  <button className="btn btn-warning btn-sm me-2" onClick={() => setEditingTopping(topping.id)}>
+                    Edit
+                  </button>
+                  <button className="btn btn-danger btn-sm" onClick={() => deleteTopping(topping._id)}>
+                    Delete
+                  </button>
+                </div>
               </>
             )}
           </li>

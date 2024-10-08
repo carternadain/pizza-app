@@ -47,8 +47,8 @@ const updatePizza = async (req, res) => {
     }
 
     // Update pizza fields
-    pizza.name = req.body.name || pizza.name; // Update name if provided, otherwise keep the current one
-    pizza.toppings = req.body.toppings || pizza.toppings; // Update toppings if provided
+    pizza.name = req.body.name || pizza.name; 
+    pizza.toppings = req.body.toppings || pizza.toppings; 
 
     const updatedPizza = await pizza.save(); // Save the updated pizza
     res.json(updatedPizza);
@@ -80,11 +80,46 @@ const deletePizza = async (req, res) => {
 };
 
 
+const updatePizzaToppings = async (req, res) => {
+  try {
+      const pizzaId = req.params.id;
+      const { toppings } = req.body; // Destructure toppings from body
+
+      console.log('Received toppings:', toppings); // Log the incoming topping data
+
+      // Validate pizza ID
+      if (!mongoose.Types.ObjectId.isValid(pizzaId)) {
+          return res.status(400).json({ message: 'Invalid pizza ID' });
+      }
+
+      // Validate that all topping IDs are valid ObjectIds
+      if (toppings.some(topping => !mongoose.Types.ObjectId.isValid(topping))) {
+          return res.status(400).json({ message: 'Invalid topping ID' });
+      }
+
+      const pizza = await Pizza.findById(pizzaId);
+      if (!pizza) {
+          return res.status(404).json({ message: 'Pizza not found' });
+      }
+
+      // Update toppings and save
+      pizza.toppings = toppings;
+      const updatedPizza = await pizza.save();
+      
+      res.json(updatedPizza);
+  } catch (err) {
+      res.status(500).json({ message: err.message });
+  }
+};
+
+
+
 // Export the controller functions
 module.exports = {
   getPizzas,
   getPizzaById,   // Added this method
   addPizza,
   updatePizza,    // Added this method
-  deletePizza
+  deletePizza,
+  updatePizzaToppings
 };
