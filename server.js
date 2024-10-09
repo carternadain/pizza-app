@@ -1,8 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const Topping = require('./models/Toppings'); // 
-const pizzaRoutes = require('./routes/pizzas'); // Import pizza routes
+const Topping = require('./models/Toppings'); 
+const pizzaRoutes = require('./routes/pizzas'); 
+const path = require('path'); // For serving static files
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,8 +12,11 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/pizza-app', {
+// MongoDB Atlas connection string
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pizza-app';
+
+// Connect to MongoDB (using either Atlas or local)
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
@@ -77,7 +81,16 @@ app.delete('/api/toppings/:id', async (req, res) => {
 });
 
 // Pizza routes
-app.use('/api/pizzas', pizzaRoutes); // Use the pizza routes
+app.use('/api/pizzas', pizzaRoutes);
+
+// Serve static files from the React app in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
 
 // Start the server
 app.listen(PORT, () => {
