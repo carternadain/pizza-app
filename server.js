@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors');
+
 const mongoose = require('mongoose');
 const path = require('path'); // For serving static files
 const toppingsRouter = require('./routes/toppings'); // Toppings routes
@@ -20,17 +20,13 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Atlas connection string
-const MONGODB_URI = process.env.MONGODB_URI || 'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com/api/pizzas';
+// const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pizza-app';
+const mongoURI = 'mongodb+srv://carternadain:Na0SpAzcK462kVT4@cluster0.3xorw.mongodb.net/Cluster0?retryWrites=true&w=majority';
 
-// Connect to MongoDB (using either Atlas or local)
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((error) => {
-  console.error('MongoDB connection error:', error);
-});
+// Connect to MongoDB
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connection established successfully'))
+  .catch(err => console.log('MongoDB connection error:', err));
 
 // Routes for toppings and pizzas
 app.use('/api/toppings', toppingsRouter);
