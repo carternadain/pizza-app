@@ -1,43 +1,39 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path'); // For serving static files
-const cors = require('cors'); // Added CORS import
-const toppingsRouter = require('./routes/toppings'); // Toppings routes
-const pizzaRoutes = require('./routes/pizzas'); // Pizza routes
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config(); // Loads environment variables from .env file
+
+// Import routes
+const toppingsRouter = require('./routes/toppings');
+const pizzaRoutes = require('./routes/pizzas');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS configuration for allowing requests from your frontend
-app.use(cors({ 
-  origin: 'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
-  credentials: true
-}));
-
 // Middleware
-app.use(express.json());
+app.use(cors());
+app.use(bodyParser.json());
 
-// MongoDB connection URI
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pizza-app';
+// MongoDB Atlas connection string from environment variable
+const MONGODB_URI = process.env.MONGODB_URI;
 
-// Connect to MongoDB
-mongoose.connect(MONGODB_URI, { 
-  useNewUrlParser: true, 
-  useUnifiedTopology: true 
-})
-  .then(() => console.log('MongoDB connection established successfully'))
-  .catch(err => console.log('MongoDB connection error:', err));
+// Connect to MongoDB Atlas
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch(err => console.log('MongoDB connection error: ', err));
 
 // Routes for toppings and pizzas
 app.use('/api/toppings', toppingsRouter);
 app.use('/api/pizzas', pizzaRoutes);
 
+// Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-  // Serve static files from the React app in production
+  // Serve static files from the frontend (Vite build output)
   app.use(express.static(path.join(__dirname, 'pizza-app-frontend/dist')));
 
-  // Serve index.html for all other routes (React SPA)
+  // Serve index.html for all other routes (for React Router)
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'pizza-app-frontend', 'dist', 'index.html'));
   });
