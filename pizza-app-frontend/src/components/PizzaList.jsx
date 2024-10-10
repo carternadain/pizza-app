@@ -8,6 +8,8 @@ const PizzaManager = () => {
   const [editPizza, setEditPizza] = useState({ id: '', name: '', toppings: [] });
   const [availableToppings, setAvailableToppings] = useState([]);
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL; // Fetch the backend URL from the environment variable
+
   useEffect(() => {
     const fetchData = async () => {
       await fetchPizzas();
@@ -18,7 +20,7 @@ const PizzaManager = () => {
 
   const fetchPizzas = async () => {
     try {
-      const response = await axios.get(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/pizzas`, { params: { timestamp: new Date().getTime() } });
+      const response = await axios.get(`${API_URL}/api/pizzas`, { params: { timestamp: new Date().getTime() } });
       setPizzas(response.data);
     } catch (error) {
       console.error('Error fetching pizzas:', error);
@@ -27,7 +29,7 @@ const PizzaManager = () => {
 
   const fetchToppings = async () => {
     try {
-      const response = await axios.get(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/toppings`);
+      const response = await axios.get(`${API_URL}/api/toppings`);
       setAvailableToppings(response.data);
     } catch (error) {
       console.error('Error fetching toppings:', error);
@@ -37,7 +39,7 @@ const PizzaManager = () => {
   const addPizza = async () => {
     if (!newPizza.trim()) return;
     try {
-      await axios.post(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/pizzas`, { name: newPizza });
+      await axios.post(`${API_URL}/api/pizzas`, { name: newPizza });
       fetchPizzas();
       setNewPizza('');
     } catch (error) {
@@ -47,7 +49,7 @@ const PizzaManager = () => {
 
   const deletePizza = async (id) => {
     try {
-      await axios.delete(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/pizzas/${id}`);
+      await axios.delete(`${API_URL}/api/pizzas/${id}`);
       fetchPizzas();
     } catch (error) {
       console.error('Error deleting pizza:', error);
@@ -57,7 +59,7 @@ const PizzaManager = () => {
   const updatePizza = async () => {
     if (!editPizza.name.trim()) return;
     try {
-      await axios.put(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/pizzas/${editPizza.id}`, { name: editPizza.name });
+      await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, { name: editPizza.name });
       fetchPizzas();
       setEditPizza({ id: '', name: '', toppings: [] });
     } catch (error) {
@@ -66,11 +68,9 @@ const PizzaManager = () => {
   };
 
   const updatePizzaToppings = async () => {
-    const uniqueToppings = [...new Set(editPizza.toppings.map(topping => {
-      return typeof topping === 'string' ? topping : topping._id;
-    }))];
+    const uniqueToppings = [...new Set(editPizza.toppings.map((topping) => (typeof topping === 'string' ? topping : topping._id)))];
     try {
-      const response = await axios.put(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/pizzas/${editPizza.id}/toppings`, { toppings: uniqueToppings });
+      const response = await axios.put(`${API_URL}/api/pizzas/${editPizza.id}/toppings`, { toppings: uniqueToppings });
       fetchPizzas();
       setEditPizza({ id: '', name: '', toppings: [] });
       alert('Pizza toppings updated successfully!');
@@ -83,9 +83,7 @@ const PizzaManager = () => {
   const handleToppingChange = (toppingId) => {
     setEditPizza((prev) => {
       const isSelected = prev.toppings.includes(toppingId);
-      const updatedToppings = isSelected
-        ? prev.toppings.filter((id) => id !== toppingId)
-        : [...prev.toppings, toppingId];
+      const updatedToppings = isSelected ? prev.toppings.filter((id) => id !== toppingId) : [...prev.toppings, toppingId];
       return { ...prev, toppings: updatedToppings };
     });
   };

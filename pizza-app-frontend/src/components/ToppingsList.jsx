@@ -7,12 +7,14 @@ const ToppingsList = () => {
   const [editingTopping, setEditingTopping] = useState(null);
   const [updatedTopping, setUpdatedTopping] = useState('');
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL; // Fetch the backend URL from the environment variable
+
   useEffect(() => {
-    fetch(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/toppings`)
+    fetch(`${API_URL}/api/toppings`)
       .then((response) => response.json())
       .then((data) => setToppings(data))
       .catch((error) => console.error('Error fetching toppings:', error));
-  }, []);
+  }, [API_URL]);
 
   const addTopping = () => {
     const formattedTopping = newTopping.trim().toLowerCase();
@@ -28,7 +30,7 @@ const ToppingsList = () => {
       return;
     }
 
-    fetch(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/toppings`, {
+    fetch(`${API_URL}/api/toppings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newTopping }),
@@ -44,7 +46,7 @@ const ToppingsList = () => {
   const updateTopping = (id) => {
     if (!id || updatedTopping.trim() === '') return;
 
-    fetch(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/toppings/${id}`, {
+    fetch(`${API_URL}/api/toppings/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: updatedTopping }),
@@ -63,7 +65,7 @@ const ToppingsList = () => {
   const deleteTopping = (id) => {
     if (!id) return;
 
-    fetch(`${process.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/toppings/${id}`, { method: 'DELETE' })
+    fetch(`${API_URL}/api/toppings/${id}`, { method: 'DELETE' })
       .then(() => {
         setToppings(toppings.filter((topping) => topping._id !== id));
       })
