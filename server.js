@@ -20,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Atlas connection string
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pizza-app';
+const MONGODB_URI = process.env.MONGODB_URI || 'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com/api/pizzas';
 
 // Connect to MongoDB (using either Atlas or local)
 mongoose.connect(MONGODB_URI, {
