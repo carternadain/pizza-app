@@ -30,16 +30,16 @@ app.use('/api/toppings', toppingsRouter);
 app.use('/api/pizzas', pizzaRoutes);
 
 
-// Serve static files from React frontend in production
 if (process.env.NODE_ENV === 'production') {
-  // Serve React build folder
-  app.use(express.static(path.join(__dirname, 'pizza-app-frontend/build')));
+  // Serve React dist folder
+  app.use(express.static(path.join(__dirname, 'pizza-app-frontend/dist')));
 
   // Serve index.html for all other routes
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'pizza-app-frontend', 'build', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'pizza-app-frontend', 'dist', 'index.html'));
   });
 }
+
 
 // Start the server
 app.listen(PORT, () => {

@@ -1,4 +1,4 @@
-const Topping = require('../models/toppings');
+const Topping = require('../models/Toppings');
 
 // Get all toppings
 exports.getToppings = async (req, res) => {
