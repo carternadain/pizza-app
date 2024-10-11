@@ -71,7 +71,7 @@ const PizzaManager = () => {
   };
 
   const updatePizzaToppings = async () => {
-    const uniqueToppings = [...new Set((editPizza.toppings || []).map((topping) => (typeof topping === 'string' ? topping : topping._id)))];
+    const uniqueToppings = [...new Set(editPizza.toppings)];
     try {
       const response = await axios.put(`${API_URL}/api/pizzas/${editPizza.id}/toppings`, { toppings: uniqueToppings });
       fetchPizzas();
@@ -82,7 +82,7 @@ const PizzaManager = () => {
       alert('Failed to update pizza toppings. Please try again.');
     }
   };
-  
+
   const handleToppingChange = (toppingId) => {
     setEditPizza((prev) => {
       const isSelected = prev.toppings.includes(toppingId);
@@ -92,6 +92,8 @@ const PizzaManager = () => {
   };
 
   console.log('Current pizzas:', pizzas); // Log current pizzas
+  console.log('Available toppings:', availableToppings); // Log available toppings
+  console.log('Selected pizza toppings:', editPizza.toppings); // Log selected pizza toppings
 
   return (
     <div className="container my-4">
@@ -151,10 +153,10 @@ const PizzaManager = () => {
 
       {editPizza.id && (
         <ToppingsEditor
-          toppings={availableToppings}
-          selectedToppings={editPizza.toppings}
-          onToppingChange={handleToppingChange}
-          onUpdateToppings={updatePizzaToppings}
+          pizzaToppings={editPizza.toppings}
+          availableToppings={availableToppings}
+          handleToppingChange={handleToppingChange}
+          updatePizzaToppings={updatePizzaToppings}
         />
       )}
     </div>
