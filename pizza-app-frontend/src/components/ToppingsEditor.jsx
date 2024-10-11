@@ -1,7 +1,6 @@
 import React from 'react';
 
 const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleToppingChange, updatePizzaToppings }) => {
-    // Log the props to see what's being passed
     console.log('pizzaToppings:', pizzaToppings);
     console.log('availableToppings:', availableToppings);
 
@@ -10,7 +9,6 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
         (topping) => !pizzaToppings.includes(topping._id)
     );
 
-    // Log the filtered toppings to add
     console.log('toppingsToAdd:', toppingsToAdd);
 
     return (
@@ -38,7 +36,7 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                                         {topping.name}
                                         <button
                                             className="btn btn-danger btn-sm"
-                                            onClick={() => handleToppingChange(toppingId)} // Remove topping
+                                            onClick={() => handleToppingChange(topping._id)} // Remove topping
                                         >
                                             Remove
                                         </button>
@@ -57,7 +55,6 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                     <ul className="list-group">
                         {toppingsToAdd.length > 0 ? (
                             toppingsToAdd.map((topping) => {
-                                // Log each available topping to be added
                                 console.log('Available topping to add:', topping);
 
                                 return (

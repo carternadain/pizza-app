@@ -77,7 +77,7 @@ const PizzaManager = () => {
             await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
                 toppings: editPizza.toppings,  // update only toppings
             });
-            fetchPizzas();
+            fetchPizzas();  // Reload pizzas after saving toppings
         } catch (error) {
             console.error('Error updating pizza toppings:', error);
         }
