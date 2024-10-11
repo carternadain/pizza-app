@@ -19,12 +19,13 @@ const PORT = process.env.PORT || 5000;
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:5173', // Vite local dev
-  'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com/', // Your frontend on Heroku
+  'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com', // Updated Heroku frontend URL
 ];
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -39,11 +40,6 @@ app.use(cors(corsOptions)); // Apply CORS options
 app.use(bodyParser.json());
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pizza-app';
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.log('MongoDB connection error:', err));
-
-// Connect to MongoDB Atlas
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected successfully'))
   .catch(err => console.log('MongoDB connection error: ', err));
