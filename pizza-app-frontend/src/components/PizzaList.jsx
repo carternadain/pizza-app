@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ToppingsEditor from './ToppingsEditor';
 
-// Replace with Heroku backend URL
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com';
 
 const PizzaManager = () => {
@@ -10,8 +9,6 @@ const PizzaManager = () => {
     const [newPizza, setNewPizza] = useState('');
     const [editPizza, setEditPizza] = useState({ id: '', name: '', toppings: [] });
     const [availableToppings, setAvailableToppings] = useState([]);
-    const [updatedTopping, setUpdatedTopping] = useState('');
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -64,7 +61,10 @@ const PizzaManager = () => {
     const updatePizza = async () => {
         if (!editPizza.name.trim()) return;
         try {
-            await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, { name: editPizza.name });
+            await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
+                name: editPizza.name,
+                toppings: editPizza.toppings,  // include toppings here
+            });
             fetchPizzas();
             setEditPizza({ id: '', name: '', toppings: [] });
         } catch (error) {
@@ -72,33 +72,22 @@ const PizzaManager = () => {
         }
     };
 
-    // Function to update a topping by ID
-    const updateTopping = async (id) => {
-        if (!id || updatedTopping.trim() === '') return;
-
+    const updatePizzaToppings = async () => {
         try {
-            const response = await axios.put(`${API_URL}/api/toppings/${id}`, { name: updatedTopping });
-            if (response.status === 200) {
-                setAvailableToppings((prev) =>
-                    prev.map((topping) =>
-                        topping._id === id ? { ...topping, name: updatedTopping } : topping
-                    )
-                );
-                setUpdatedTopping('');
-                console.log('Topping updated successfully');
-            }
+            await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
+                toppings: editPizza.toppings,  // update only toppings
+            });
+            fetchPizzas();
         } catch (error) {
-            setError('Error updating topping.');
-            console.error('Error updating topping:', error);
+            console.error('Error updating pizza toppings:', error);
         }
     };
 
-    // Handles toggling of toppings in pizza editor
     const handleToppingChange = (toppingId) => {
         const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
 
         console.log('Topping ID being toggled:', id);
-
+        
         setEditPizza((prev) => {
             const isSelected = prev.toppings.includes(id);
             const updatedToppings = isSelected
@@ -174,7 +163,7 @@ const PizzaManager = () => {
                     pizzaToppings={editPizza.toppings}
                     availableToppings={availableToppings}
                     handleToppingChange={handleToppingChange}
-                    updatePizzaToppings={updatePizza}
+                    updatePizzaToppings={updatePizzaToppings}
                 />
             )}
         </div>
