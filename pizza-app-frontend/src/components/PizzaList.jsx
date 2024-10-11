@@ -3,7 +3,7 @@ import axios from 'axios';
 import ToppingsEditor from './ToppingsEditor';
 
 // Replace with Heroku backend URL
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174.herokuapp.com'; 
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com'; 
 
 const PizzaManager = () => {
   const [pizzas, setPizzas] = useState([]);

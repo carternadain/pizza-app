@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Replace with Heroku backend URL
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174.herokuapp.com';
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com';
 
 const ToppingsList = () => {
   const [toppings, setToppings] = useState([]);
