@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ToppingsEditor from './ToppingsEditor';
 
+// Replace with Heroku backend URL
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174.herokuapp.com'; 
+
 const PizzaManager = () => {
   const [pizzas, setPizzas] = useState([]);
   const [newPizza, setNewPizza] = useState('');
   const [editPizza, setEditPizza] = useState({ id: '', name: '', toppings: [] });
   const [availableToppings, setAvailableToppings] = useState([]);
-
-  const API_URL = import.meta.env.VITE_BACKEND_URL; // Fetch the backend URL from the environment variable
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,38 +107,42 @@ const PizzaManager = () => {
       </div>
 
       <ul className="list-group">
-        {pizzas.map((pizza) => (
-          <li className="list-group-item d-flex justify-content-between align-items-center" key={pizza._id}>
-            {editPizza.id === pizza._id ? (
-              <>
-                <input
-                  type="text"
-                  className="form-control me-2"
-                  value={editPizza.name}
-                  onChange={(e) => setEditPizza({ ...editPizza, name: e.target.value })}
-                />
-                <button className="btn btn-success btn-sm" onClick={updatePizza}>
-                  Save
-                </button>
-              </>
-            ) : (
-              <>
-                {pizza.name}
-                <div>
-                  <button
-                    className="btn btn-warning btn-sm me-2"
-                    onClick={() => setEditPizza({ id: pizza._id, name: pizza.name, toppings: pizza.toppings })}
-                  >
-                    Edit
+        {pizzas.length > 0 ? (
+          pizzas.map((pizza) => (
+            <li className="list-group-item d-flex justify-content-between align-items-center" key={pizza._id}>
+              {editPizza.id === pizza._id ? (
+                <>
+                  <input
+                    type="text"
+                    className="form-control me-2"
+                    value={editPizza.name}
+                    onChange={(e) => setEditPizza({ ...editPizza, name: e.target.value })}
+                  />
+                  <button className="btn btn-success btn-sm" onClick={updatePizza}>
+                    Save
                   </button>
-                  <button className="btn btn-danger btn-sm" onClick={() => deletePizza(pizza._id)}>
-                    Delete
-                  </button>
-                </div>
-              </>
-            )}
-          </li>
-        ))}
+                </>
+              ) : (
+                <>
+                  {pizza.name}
+                  <div>
+                    <button
+                      className="btn btn-warning btn-sm me-2"
+                      onClick={() => setEditPizza({ id: pizza._id, name: pizza.name, toppings: pizza.toppings })}
+                    >
+                      Edit
+                    </button>
+                    <button className="btn btn-danger btn-sm" onClick={() => deletePizza(pizza._id)}>
+                      Delete
+                    </button>
+                  </div>
+                </>
+              )}
+            </li>
+          ))
+        ) : (
+          <li className="list-group-item">No pizzas found.</li>
+        )}
       </ul>
 
       {editPizza.id && (

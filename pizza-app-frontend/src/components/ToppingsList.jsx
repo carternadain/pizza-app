@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+// Replace with Heroku backend URL
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174.herokuapp.com';
+
 const ToppingsList = () => {
   const [toppings, setToppings] = useState([]);
   const [newTopping, setNewTopping] = useState('');
   const [editingTopping, setEditingTopping] = useState(null);
   const [updatedTopping, setUpdatedTopping] = useState('');
   const [error, setError] = useState(null);
-
-  const API_URL = import.meta.env.VITE_BACKEND_URL; // Fetch the backend URL from the environment variable
 
   useEffect(() => {
     fetch(`${API_URL}/api/toppings`)
@@ -110,10 +111,8 @@ const ToppingsList = () => {
   };
 
   return (
-    <div className="container my-4">
-      <h2 className="text-center mb-4">Manage Toppings</h2>
-
-      {error && <div className="alert alert-danger">{error}</div>}
+    <div className="container">
+      <h2 className="text-center mb-4">Toppings</h2>
 
       <div className="input-group mb-3">
         <input
@@ -139,10 +138,9 @@ const ToppingsList = () => {
                     className="form-control me-2"
                     value={updatedTopping}
                     onChange={(e) => setUpdatedTopping(e.target.value)}
-                    placeholder="Update topping"
                   />
                   <button className="btn btn-success btn-sm" onClick={() => updateTopping(topping._id)}>
-                    Update
+                    Save
                   </button>
                 </>
               ) : (
