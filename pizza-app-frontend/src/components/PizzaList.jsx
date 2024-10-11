@@ -71,27 +71,38 @@ const PizzaManager = () => {
   };
 
   const updatePizzaToppings = async () => {
-    const uniqueToppings = [...new Set(editPizza.toppings)];
+    const uniqueToppings = [...new Set(editPizza.toppings.map(id => String(id)))];
+    
+    // Log the unique toppings being sent
+    console.log('Updating pizza toppings:', uniqueToppings);
+    
     try {
-      await axios.put(`${API_URL}/api/pizzas/${editPizza.id}/toppings`, { toppings: uniqueToppings });
-      fetchPizzas();
-      setEditPizza({ id: '', name: '', toppings: [] });
-      alert('Pizza toppings updated successfully!');
+        const response = await axios.put(`${API_URL}/api/pizzas/${editPizza.id}/toppings`, { toppings: uniqueToppings });
+        fetchPizzas();
+        setEditPizza({ id: '', name: '', toppings: [] });
+        alert('Pizza toppings updated successfully!');
     } catch (error) {
-      console.error('Error updating pizza toppings:', error.response?.data || error.message);
-      alert('Failed to update pizza toppings. Please try again.');
+        console.error('Error updating pizza toppings:', error.response?.data || error.message);
+        alert('Failed to update pizza toppings. Please try again.');
     }
-  };
+};
 
-  const handleToppingChange = (toppingId) => {
-    setEditPizza((prev) => {
-      const isSelected = prev.toppings.includes(toppingId);
+const handleToppingChange = (toppingId) => {
+  const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
+
+  // Log the current topping ID and its status (selected/unselected)
+  console.log('Topping ID being toggled:', id);
+  
+  setEditPizza((prev) => {
+      const isSelected = prev.toppings.includes(id);
       const updatedToppings = isSelected
-        ? prev.toppings.filter((id) => id !== toppingId)
-        : [...prev.toppings, toppingId];
+          ? prev.toppings.filter((id) => id !== toppingId)
+          : [...prev.toppings, id];
       return { ...prev, toppings: updatedToppings };
-    });
-  };
+  });
+};
+
+
 
   console.log('Current pizzas:', pizzas);
   console.log('Available toppings:', availableToppings);
