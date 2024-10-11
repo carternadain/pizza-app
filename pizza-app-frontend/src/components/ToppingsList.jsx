@@ -20,7 +20,7 @@ const ToppingsList = () => {
         return response.json();
       })
       .then((data) => {
-        console.log('Data received from API:', data); // Add this log
+        console.log('Data received from API:', data);
         if (Array.isArray(data)) {
           setToppings(data);
         } else {
@@ -29,9 +29,9 @@ const ToppingsList = () => {
       })
       .catch((error) => {
         setError('Error fetching toppings.');
-        console.error('Error fetching toppings:', error); // Log the error
+        console.error('Error fetching toppings:', error);
       });
-  }, [API_URL]);
+  }, []); // API_URL removed from the dependency array
 
   const addTopping = () => {
     const formattedTopping = newTopping.trim().toLowerCase();
@@ -50,7 +50,7 @@ const ToppingsList = () => {
     fetch(`${API_URL}/api/toppings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newTopping }),
+      body: JSON.stringify({ name: formattedTopping }), // Send formatted topping consistently
     })
       .then((response) => {
         if (!response.ok) {
@@ -69,12 +69,17 @@ const ToppingsList = () => {
   };
 
   const updateTopping = (id) => {
-    if (!id || updatedTopping.trim() === '') return;
+    const formattedTopping = updatedTopping.trim().toLowerCase();
+
+    if (!id || formattedTopping === '') {
+      alert("Topping name can't be empty.");
+      return;
+    }
 
     fetch(`${API_URL}/api/toppings/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: updatedTopping }),
+      body: JSON.stringify({ name: formattedTopping }), // Send formatted topping
     })
       .then((response) => {
         if (!response.ok) {
@@ -84,7 +89,7 @@ const ToppingsList = () => {
       })
       .then(() => {
         setToppings(toppings.map((topping) =>
-          topping._id === id ? { ...topping, name: updatedTopping } : topping
+          topping._id === id ? { ...topping, name: formattedTopping } : topping
         ));
         setEditingTopping(null);
         setUpdatedTopping('');
