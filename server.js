@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000;
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:5173', // Vite local dev
-  'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com', // Your frontend on Heroku
+  'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com/', // Your frontend on Heroku
 ];
 
 const corsOptions = {
