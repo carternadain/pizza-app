@@ -4,8 +4,10 @@ const Topping = require('../models/Toppings');
 exports.getToppings = async (req, res) => {
     try {
         const toppings = await Topping.find({});
+        console.log('Toppings fetched from DB:', toppings); // Log the data
         res.status(200).json(toppings);
     } catch (error) {
+        console.error('Error fetching toppings:', err);
         res.status(500).json({ message: 'Error fetching toppings' });
     }
 };

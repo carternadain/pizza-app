@@ -10,7 +10,7 @@ const ToppingsList = () => {
   const [editingTopping, setEditingTopping] = useState(null);
   const [updatedTopping, setUpdatedTopping] = useState('');
   const [error, setError] = useState(null);
-
+  
   useEffect(() => {
     fetch(`${API_URL}/api/toppings`)
       .then((response) => {
@@ -20,6 +20,7 @@ const ToppingsList = () => {
         return response.json();
       })
       .then((data) => {
+        console.log('Data received from API:', data); // Add this log
         if (Array.isArray(data)) {
           setToppings(data);
         } else {
@@ -28,7 +29,7 @@ const ToppingsList = () => {
       })
       .catch((error) => {
         setError('Error fetching toppings.');
-        console.error('Error fetching toppings:', error);
+        console.error('Error fetching toppings:', error); // Log the error
       });
   }, [API_URL]);
 
