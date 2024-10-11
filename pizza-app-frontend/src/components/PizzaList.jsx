@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ToppingsEditor from './ToppingsEditor';
 
-// Replace with Heroku backend URL
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com'; 
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com';
 
 const PizzaManager = () => {
   const [pizzas, setPizzas] = useState([]);
@@ -76,33 +75,38 @@ const PizzaManager = () => {
     // Log the unique toppings being sent
     console.log('Updating pizza toppings:', uniqueToppings);
     
-    try {
-        const response = await axios.put(`${API_URL}/api/pizzas/${editPizza.id}/toppings`, { toppings: uniqueToppings });
-        fetchPizzas();
-        setEditPizza({ id: '', name: '', toppings: [] });
-        alert('Pizza toppings updated successfully!');
-    } catch (error) {
-        console.error('Error updating pizza toppings:', error.response?.data || error.message);
-        alert('Failed to update pizza toppings. Please try again.');
+    // Check if the topping IDs are valid
+    for (const toppingId of uniqueToppings) {
+      if (!availableToppings.find(topping => topping._id === toppingId)) {
+        console.error(`Topping ID ${toppingId} is invalid or not found in available toppings`);
+        return alert(`Topping ID ${toppingId} is invalid or not found.`);
+      }
     }
-};
 
-const handleToppingChange = (toppingId) => {
-  const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
+    try {
+      const response = await axios.put(`${API_URL}/api/pizzas/${editPizza.id}/toppings`, { toppings: uniqueToppings });
+      fetchPizzas();
+      setEditPizza({ id: '', name: '', toppings: [] });
+      alert('Pizza toppings updated successfully!');
+    } catch (error) {
+      console.error('Error updating pizza toppings:', error.response?.data || error.message);
+      alert('Failed to update pizza toppings. Please try again.');
+    }
+  };
 
-  // Log the current topping ID and its status (selected/unselected)
-  console.log('Topping ID being toggled:', id);
-  
-  setEditPizza((prev) => {
+  const handleToppingChange = (toppingId) => {
+    const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
+
+    console.log('Topping ID being toggled:', id);
+    
+    setEditPizza((prev) => {
       const isSelected = prev.toppings.includes(id);
       const updatedToppings = isSelected
           ? prev.toppings.filter((id) => id !== toppingId)
           : [...prev.toppings, id];
       return { ...prev, toppings: updatedToppings };
-  });
-};
-
-
+    });
+  };
 
   console.log('Current pizzas:', pizzas);
   console.log('Available toppings:', availableToppings);
