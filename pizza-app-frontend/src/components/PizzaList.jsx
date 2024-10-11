@@ -10,6 +10,8 @@ const PizzaManager = () => {
     const [newPizza, setNewPizza] = useState('');
     const [editPizza, setEditPizza] = useState({ id: '', name: '', toppings: [] });
     const [availableToppings, setAvailableToppings] = useState([]);
+    const [updatedTopping, setUpdatedTopping] = useState('');
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -70,42 +72,37 @@ const PizzaManager = () => {
         }
     };
 
-    const updatePizzaToppings = async () => {
-        const uniqueToppings = [...new Set(editPizza.toppings.map(id => String(id)))];
-        
-        // Log the unique toppings being sent
-        console.log('Updating pizza toppings:', uniqueToppings);
-        
-        // Check if the topping IDs are valid
-        for (const toppingId of uniqueToppings) {
-            if (!availableToppings.find(topping => topping._id === toppingId)) {
-                console.error(`Topping ID ${toppingId} is invalid or not found in available toppings`);
-                return alert(`Topping ID ${toppingId} is invalid or not found.`);
-            }
-        }
+    // Function to update a topping by ID
+    const updateTopping = async (id) => {
+        if (!id || updatedTopping.trim() === '') return;
 
         try {
-            const response = await axios.put(`${API_URL}/api/pizzas/${editPizza.id}/toppings`, { toppings: uniqueToppings });
-            fetchPizzas();
-            setEditPizza({ id: '', name: '', toppings: [] });
-            alert('Pizza toppings updated successfully!');
+            const response = await axios.put(`${API_URL}/api/toppings/${id}`, { name: updatedTopping });
+            if (response.status === 200) {
+                setAvailableToppings((prev) =>
+                    prev.map((topping) =>
+                        topping._id === id ? { ...topping, name: updatedTopping } : topping
+                    )
+                );
+                setUpdatedTopping('');
+                console.log('Topping updated successfully');
+            }
         } catch (error) {
-            console.error('Error updating pizza toppings:', error.response?.data || error.message);
-            alert('Failed to update pizza toppings. Please try again.');
+            setError('Error updating topping.');
+            console.error('Error updating topping:', error);
         }
     };
 
+    // Handles toggling of toppings in pizza editor
     const handleToppingChange = (toppingId) => {
-        // Extract the ID correctly
-        const id = typeof toppingId === 'object' ? toppingId._id : toppingId; // this will ensure you always get the string ID
+        const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
 
-        // Log the current topping ID and its status (selected/unselected)
         console.log('Topping ID being toggled:', id);
-        
+
         setEditPizza((prev) => {
             const isSelected = prev.toppings.includes(id);
             const updatedToppings = isSelected
-                ? prev.toppings.filter((existingId) => existingId !== id) // use id here
+                ? prev.toppings.filter((existingId) => existingId !== id)
                 : [...prev.toppings, id];
             return { ...prev, toppings: updatedToppings };
         });
@@ -177,7 +174,7 @@ const PizzaManager = () => {
                     pizzaToppings={editPizza.toppings}
                     availableToppings={availableToppings}
                     handleToppingChange={handleToppingChange}
-                    updatePizzaToppings={updatePizzaToppings}
+                    updatePizzaToppings={updatePizza}
                 />
             )}
         </div>
