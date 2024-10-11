@@ -1,6 +1,10 @@
 import React from 'react';
 
-const ToppingsEditor = ({ pizzaToppings, availableToppings, handleToppingChange, updatePizzaToppings }) => {
+const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleToppingChange, updatePizzaToppings }) => {
+    // Log the props to see what's being passed
+    console.log('pizzaToppings:', pizzaToppings);
+    console.log('availableToppings:', availableToppings);
+
     // Get toppings that can be added (not already on the pizza)
     const toppingsToAdd = availableToppings.filter(
         (topping) => !pizzaToppings.includes(topping._id)
@@ -15,10 +19,16 @@ const ToppingsEditor = ({ pizzaToppings, availableToppings, handleToppingChange,
                     <h5>Current Toppings</h5>
                     <ul className="list-group">
                         {pizzaToppings.map((toppingId) => {
+                            // Log each toppingId
+                            console.log('toppingId:', toppingId);
+
                             // Find the topping by ID, if not found return null to avoid "Unknown Topping"
                             const topping = availableToppings.find((t) => t._id === toppingId);
-                            if (!topping) return null; // Avoid rendering unknown toppings
-                            
+                            if (!topping) {
+                                console.log(`Topping with ID ${toppingId} not found in availableToppings`);
+                                return null;
+                            }
+
                             return (
                                 <li key={toppingId} className="list-group-item d-flex justify-content-between align-items-center">
                                     {topping.name}
@@ -38,17 +48,22 @@ const ToppingsEditor = ({ pizzaToppings, availableToppings, handleToppingChange,
                 <div className="col-md-6">
                     <h5>Available Toppings to Add</h5>
                     <ul className="list-group">
-                        {toppingsToAdd.map((topping) => (
-                            <li key={topping._id} className="list-group-item d-flex justify-content-between align-items-center">
-                                {topping.name}
-                                <button
-                                    className="btn btn-success btn-sm"
-                                    onClick={() => handleToppingChange(topping._id)} // Add topping
-                                >
-                                    Add
-                                </button>
-                            </li>
-                        ))}
+                        {toppingsToAdd.map((topping) => {
+                            // Log each available topping to be added
+                            console.log('Available topping to add:', topping);
+
+                            return (
+                                <li key={topping._id} className="list-group-item d-flex justify-content-between align-items-center">
+                                    {topping.name}
+                                    <button
+                                        className="btn btn-success btn-sm"
+                                        onClick={() => handleToppingChange(topping._id)} // Add topping
+                                    >
+                                        Add
+                                    </button>
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             </div>
