@@ -38,7 +38,9 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                                         {topping.name}
                                         <button
                                             className="btn btn-danger btn-sm"
-                                            onClick={() => handleToppingChange(id)} // Remove topping
+                                            onClick={() => handleToppingChange(
+                                                pizzaToppings.filter((t) => t !== id)  // Remove topping
+                                            )}
                                         >
                                             Remove
                                         </button>
@@ -64,7 +66,9 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                                         {topping.name}
                                         <button
                                             className="btn btn-success btn-sm"
-                                            onClick={() => handleToppingChange(topping._id)} // Add topping
+                                            onClick={() => handleToppingChange(
+                                                [...pizzaToppings, topping._id] // Add topping
+                                            )}
                                         >
                                             Add
                                         </button>

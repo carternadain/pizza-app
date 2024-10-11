@@ -71,17 +71,22 @@ const PizzaManager = () => {
             console.error('Error updating pizza:', error);
         }
     };
-
     const updatePizzaToppings = async () => {
+        // Remove duplicates from editPizza.toppings by converting to a Set and back to an array
+        const uniqueToppings = [...new Set(editPizza.toppings)];
+    
         try {
             await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
-                toppings: editPizza.toppings,  // update only toppings
+                toppings: uniqueToppings,  // Save only unique toppings
             });
             fetchPizzas();  // Reload pizzas after saving toppings
+            alert('Toppings successfully saved!');
         } catch (error) {
             console.error('Error updating pizza toppings:', error);
+            alert('Failed to save toppings.');
         }
     };
+    
 
     const handleToppingChange = (toppingId) => {
         const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
