@@ -39,8 +39,9 @@ app.use(cors(corsOptions)); // Apply CORS options
 // Middleware
 app.use(bodyParser.json());
 
+// Mongoose connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pizza-app';
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MONGODB_URI)
   .then(() => console.log('MongoDB connected successfully'))
   .catch(err => console.log('MongoDB connection error: ', err));
 
