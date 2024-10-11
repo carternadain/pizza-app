@@ -23,6 +23,7 @@ const PizzaManager = () => {
     try {
       const response = await axios.get(`${API_URL}/api/pizzas`, { params: { timestamp: new Date().getTime() } });
       setPizzas(response.data);
+      console.log('Fetched pizzas:', response.data); // Log the fetched pizzas
     } catch (error) {
       console.error('Error fetching pizzas:', error);
     }
@@ -32,6 +33,7 @@ const PizzaManager = () => {
     try {
       const response = await axios.get(`${API_URL}/api/toppings`);
       setAvailableToppings(response.data);
+      console.log('Fetched toppings:', response.data); // Log the fetched toppings
     } catch (error) {
       console.error('Error fetching toppings:', error);
     }
@@ -88,6 +90,8 @@ const PizzaManager = () => {
       return { ...prev, toppings: updatedToppings };
     });
   };
+
+  console.log('Current pizzas:', pizzas); // Log current pizzas
 
   return (
     <div className="container my-4">
