@@ -6,14 +6,29 @@ const ToppingsList = () => {
   const [newTopping, setNewTopping] = useState('');
   const [editingTopping, setEditingTopping] = useState(null);
   const [updatedTopping, setUpdatedTopping] = useState('');
+  const [error, setError] = useState(null);
 
   const API_URL = import.meta.env.VITE_BACKEND_URL; // Fetch the backend URL from the environment variable
 
   useEffect(() => {
     fetch(`${API_URL}/api/toppings`)
-      .then((response) => response.json())
-      .then((data) => setToppings(data))
-      .catch((error) => console.error('Error fetching toppings:', error));
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setToppings(data);
+        } else {
+          throw new Error('Received data is not an array.');
+        }
+      })
+      .catch((error) => {
+        setError('Error fetching toppings.');
+        console.error('Error fetching toppings:', error);
+      });
   }, [API_URL]);
 
   const addTopping = () => {
@@ -35,12 +50,20 @@ const ToppingsList = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newTopping }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to add topping.');
+        }
+        return response.json();
+      })
       .then((data) => {
         setToppings([...toppings, data]);
         setNewTopping('');
       })
-      .catch((error) => console.error('Error adding topping:', error));
+      .catch((error) => {
+        setError('Error adding topping.');
+        console.error('Error adding topping:', error);
+      });
   };
 
   const updateTopping = (id) => {
@@ -51,7 +74,12 @@ const ToppingsList = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: updatedTopping }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to update topping.');
+        }
+        return response.json();
+      })
       .then(() => {
         setToppings(toppings.map((topping) =>
           topping._id === id ? { ...topping, name: updatedTopping } : topping
@@ -59,22 +87,33 @@ const ToppingsList = () => {
         setEditingTopping(null);
         setUpdatedTopping('');
       })
-      .catch((error) => console.error('Error updating topping:', error));
+      .catch((error) => {
+        setError('Error updating topping.');
+        console.error('Error updating topping:', error);
+      });
   };
 
   const deleteTopping = (id) => {
     if (!id) return;
 
     fetch(`${API_URL}/api/toppings/${id}`, { method: 'DELETE' })
-      .then(() => {
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to delete topping.');
+        }
         setToppings(toppings.filter((topping) => topping._id !== id));
       })
-      .catch((error) => console.error('Error deleting topping:', error));
+      .catch((error) => {
+        setError('Error deleting topping.');
+        console.error('Error deleting topping:', error);
+      });
   };
 
   return (
     <div className="container my-4">
       <h2 className="text-center mb-4">Manage Toppings</h2>
+
+      {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="input-group mb-3">
         <input
@@ -90,42 +129,46 @@ const ToppingsList = () => {
       </div>
 
       <ul className="list-group">
-        {toppings.map((topping) => (
-          <li className="list-group-item d-flex justify-content-between align-items-center" key={topping._id}>
-            {editingTopping === topping._id ? (
-              <>
-                <input
-                  type="text"
-                  className="form-control me-2"
-                  value={updatedTopping}
-                  onChange={(e) => setUpdatedTopping(e.target.value)}
-                  placeholder="Update topping"
-                />
-                <button className="btn btn-success btn-sm" onClick={() => updateTopping(topping._id)}>
-                  Update
-                </button>
-              </>
-            ) : (
-              <>
-                {topping.name}
-                <div>
-                  <button
-                    className="btn btn-warning btn-sm me-2"
-                    onClick={() => {
-                      setEditingTopping(topping._id);
-                      setUpdatedTopping(topping.name);
-                    }}
-                  >
-                    Edit
+        {toppings.length > 0 ? (
+          toppings.map((topping) => (
+            <li className="list-group-item d-flex justify-content-between align-items-center" key={topping._id}>
+              {editingTopping === topping._id ? (
+                <>
+                  <input
+                    type="text"
+                    className="form-control me-2"
+                    value={updatedTopping}
+                    onChange={(e) => setUpdatedTopping(e.target.value)}
+                    placeholder="Update topping"
+                  />
+                  <button className="btn btn-success btn-sm" onClick={() => updateTopping(topping._id)}>
+                    Update
                   </button>
-                  <button className="btn btn-danger btn-sm" onClick={() => deleteTopping(topping._id)}>
-                    Delete
-                  </button>
-                </div>
-              </>
-            )}
-          </li>
-        ))}
+                </>
+              ) : (
+                <>
+                  {topping.name}
+                  <div>
+                    <button
+                      className="btn btn-warning btn-sm me-2"
+                      onClick={() => {
+                        setEditingTopping(topping._id);
+                        setUpdatedTopping(topping.name);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button className="btn btn-danger btn-sm" onClick={() => deleteTopping(topping._id)}>
+                      Delete
+                    </button>
+                  </div>
+                </>
+              )}
+            </li>
+          ))
+        ) : (
+          <li className="list-group-item">No toppings found.</li>
+        )}
       </ul>
     </div>
   );
