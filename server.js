@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config(); // Loads environment variables from .env file
+
+// Don't need dotenv in production; Heroku injects env vars automatically
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config(); // Load env vars for local development only
+}
 
 // Import routes
 const toppingsRouter = require('./routes/toppings');
@@ -14,8 +18,8 @@ const PORT = process.env.PORT || 5000;
 
 // CORS configuration
 const allowedOrigins = [
-  'http://localhost:5173', // Vite local development URL
-  'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com' // Your Heroku frontend URL
+  'http://localhost:5173', // Vite local dev
+  'https://cryptic-thicket-49174-8acbdfd07325.herokuapp.com', // Your frontend on Heroku
 ];
 
 const corsOptions = {
@@ -26,21 +30,21 @@ const corsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // Apply CORS options
 
 // Middleware
 app.use(bodyParser.json());
 
 // MongoDB Atlas connection string from environment variable
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pizza-app'; // Fallback for local dev
 
 // Connect to MongoDB Atlas
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.log('MongoDB connection error: ', err));
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch(err => console.log('MongoDB connection error: ', err));
 
 // Routes for toppings and pizzas
 app.use('/api/toppings', toppingsRouter);
