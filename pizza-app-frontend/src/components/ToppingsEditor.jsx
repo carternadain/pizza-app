@@ -26,11 +26,11 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                                 // Log each toppingId
                                 console.log('toppingId:', toppingId);
 
-                                // Find the topping by ID, if not found return null to avoid "Unknown Topping"
+                                // Find the topping by ID; if not found, log a message
                                 const topping = availableToppings.find((t) => t._id === toppingId);
                                 if (!topping) {
                                     console.log(`Topping with ID ${toppingId} not found in availableToppings`);
-                                    return null;
+                                    return null; // Return null if topping not found
                                 }
 
                                 return (
