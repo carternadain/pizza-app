@@ -21,9 +21,7 @@ const PizzaManager = () => {
     const fetchPizzas = async () => {
         try {
             const response = await axios.get(`${API_URL}/api/pizzas`, { params: { timestamp: new Date().getTime() } });
-            console.log('API pizza response:', response.data);
             setPizzas(response.data);
-            console.log('Fetched pizzas:', response.data);
         } catch (error) {
             console.error('Error fetching pizzas:', error);
         }
@@ -32,9 +30,7 @@ const PizzaManager = () => {
     const fetchToppings = async () => {
         try {
             const response = await axios.get(`${API_URL}/api/toppings`);
-            console.log('API toppings response:', response.data);
             setAvailableToppings(response.data);
-            console.log('Fetched toppings:', response.data);
         } catch (error) {
             console.error('Error fetching toppings:', error);
         }
@@ -65,7 +61,7 @@ const PizzaManager = () => {
         try {
             await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
                 name: editPizza.name,
-                toppings: editPizza.toppings,  // include toppings here
+                toppings: editPizza.toppings,
             });
             fetchPizzas();
             setEditPizza({ id: '', name: '', toppings: [] });
@@ -77,27 +73,20 @@ const PizzaManager = () => {
     const updatePizzaToppings = async (uniqueToppings) => {
         try {
             await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
-                toppings: uniqueToppings,  // Save only unique toppings
+                toppings: uniqueToppings,
             });
-            fetchPizzas();  // Reload pizzas after saving toppings
-            alert('Toppings successfully saved!'); // Notify the user
+            fetchPizzas();
+            alert('Toppings successfully saved!');
         } catch (error) {
             console.error('Error updating pizza toppings:', error);
             alert('Failed to save toppings.');
         }
     };
-    
-    const handleToppingChange = (newToppings) => {
-        const cleanedToppings = newToppings.filter(Boolean); // Remove undefined values
-        const uniqueToppings = [...new Set(cleanedToppings)]; // Ensure no duplicates
-        console.log('Updated toppings:', uniqueToppings);
 
+    const handleToppingChange = (newToppings) => {
+        const uniqueToppings = [...new Set(newToppings.filter(Boolean))];
         setEditPizza((prev) => ({ ...prev, toppings: uniqueToppings }));
     };
-
-    console.log('Current pizzas:', pizzas);
-    console.log('Available toppings:', availableToppings);
-    console.log('Selected pizza toppings:', editPizza.toppings);
 
     return (
         <div className="container my-4">
