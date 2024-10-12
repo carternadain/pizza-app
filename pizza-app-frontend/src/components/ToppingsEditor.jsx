@@ -11,13 +11,11 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
 
     const handleAddTopping = (toppingId) => {
         const newToppings = [...cleanedPizzaToppings, toppingId]; // Add topping regardless
-        console.log('Adding topping:', toppingId);
         handleToppingChange(newToppings);
     };
 
     const handleRemoveTopping = (toppingId) => {
         const newToppings = cleanedPizzaToppings.filter(id => id !== toppingId);
-        console.log('Removing topping:', toppingId);
         handleToppingChange(newToppings);
     };
 
