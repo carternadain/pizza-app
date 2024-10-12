@@ -10,11 +10,9 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
     );
 
     const handleAddTopping = (toppingId) => {
-        if (!cleanedPizzaToppings.includes(toppingId)) {
-            const newToppings = [...cleanedPizzaToppings, toppingId];
-            console.log('Adding topping:', toppingId);
-            handleToppingChange(newToppings);
-        }
+        const newToppings = [...cleanedPizzaToppings, toppingId]; // Add topping regardless
+        console.log('Adding topping:', toppingId);
+        handleToppingChange(newToppings);
     };
 
     const handleRemoveTopping = (toppingId) => {
@@ -33,17 +31,16 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                     <ul className="list-group">
                         {cleanedPizzaToppings.length > 0 ? (
                             cleanedPizzaToppings.map((toppingId) => {
-                                const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
-                                const topping = availableToppings.find((t) => t._id === id);
+                                const topping = availableToppings.find((t) => t._id === toppingId);
 
                                 if (!topping) return null; // Skip if topping not found
 
                                 return (
-                                    <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
+                                    <li key={toppingId} className="list-group-item d-flex justify-content-between align-items-center">
                                         {topping.name}
                                         <button
                                             className="btn btn-danger btn-sm"
-                                            onClick={() => handleRemoveTopping(id)}
+                                            onClick={() => handleRemoveTopping(toppingId)}
                                         >
                                             Remove
                                         </button>

@@ -9,6 +9,7 @@ const PizzaManager = () => {
     const [newPizza, setNewPizza] = useState('');
     const [editPizza, setEditPizza] = useState({ id: '', name: '', toppings: [] });
     const [availableToppings, setAvailableToppings] = useState([]);
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,10 +44,36 @@ const PizzaManager = () => {
                 name: editPizza.name,
                 toppings: editPizza.toppings,
             });
-            fetchPizzas();
-            setEditPizza({ id: '', name: '', toppings: [] });
+            setSuccessMessage('Pizza updated successfully!'); // Set success message
+            await fetchPizzas(); // Fetch pizzas again to reflect changes
+            setEditPizza({ id: '', name: '', toppings: [] }); // Reset editPizza
         } catch (error) {
             console.error('Error updating pizza:', error);
+        }
+    };
+
+    const addPizza = async () => {
+        if (!newPizza.trim()) return;
+        try {
+            await axios.post(`${API_URL}/api/pizzas`, {
+                name: newPizza,
+                toppings: [], // Set default toppings for new pizzas
+            });
+            setSuccessMessage('Pizza added successfully!'); // Set success message
+            await fetchPizzas(); // Fetch pizzas again to reflect changes
+            setNewPizza(''); // Reset newPizza
+        } catch (error) {
+            console.error('Error adding pizza:', error);
+        }
+    };
+
+    const deletePizza = async (id) => {
+        try {
+            await axios.delete(`${API_URL}/api/pizzas/${id}`);
+            setSuccessMessage('Pizza deleted successfully!'); // Set success message
+            await fetchPizzas(); // Fetch pizzas again to reflect changes
+        } catch (error) {
+            console.error('Error deleting pizza:', error);
         }
     };
 
@@ -58,6 +85,8 @@ const PizzaManager = () => {
         <div className="container my-4">
             <h2 className="text-center mb-4">Manage Pizzas</h2>
 
+            {successMessage && <div className="alert alert-success">{successMessage}</div>} {/* Display success message */}
+
             <div className="input-group mb-3">
                 <input
                     type="text"
@@ -66,7 +95,7 @@ const PizzaManager = () => {
                     onChange={(e) => setNewPizza(e.target.value)}
                     placeholder="Add new pizza"
                 />
-                <button className="btn btn-primary" onClick={() => addPizza()}>
+                <button className="btn btn-primary" onClick={addPizza}>
                     Add Pizza
                 </button>
             </div>
