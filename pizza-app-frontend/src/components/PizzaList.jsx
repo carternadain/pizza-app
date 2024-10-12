@@ -75,7 +75,7 @@ const PizzaManager = () => {
     };
 
     const updatePizzaToppings = async () => {
-        const uniqueToppings = [...new Set(editPizza.toppings)]; // Remove duplicate toppings
+        const uniqueToppings = [...new Set(editPizza.toppings.filter(Boolean))]; // Remove duplicate toppings
         
         try {
             await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
@@ -146,12 +146,16 @@ const PizzaManager = () => {
                                 <>
                                     {pizza.name}
                                     <div>
-                                        <button
-                                            className="btn btn-warning btn-sm me-2"
-                                            onClick={() => setEditPizza({ id: pizza._id, name: pizza.name, toppings: pizza.toppings })}
-                                        >
-                                            Edit
-                                        </button>
+                                    <button
+                                    className="btn btn-warning btn-sm me-2"
+                                    onClick={() => setEditPizza({
+                                    id: pizza._id,
+                                    name: pizza.name,
+                                    toppings: pizza.toppings || [], // Initialize toppings as an empty array if undefined
+                                 })}
+>
+  Edit
+</button>
                                         <button className="btn btn-danger btn-sm" onClick={() => deletePizza(pizza._id)}>
                                             Delete
                                         </button>

@@ -29,45 +29,39 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
         <div className="row">
             {/* Current Toppings Box */}
             <div className="col-md-6">
-                <h5>Current Toppings</h5>
-                <ul className="list-group">
-                    {pizzaToppings.length > 0 ? (
-                        pizzaToppings.map((toppingId) => {
-                            // Extra debug logging
-                            console.log('toppingId from pizzaToppings:', toppingId);
-                            
-                            // Ensure ID is always a string
-                            const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
+            <h5>Current Toppings</h5>
+            <ul className="list-group">
+            {pizzaToppings.length > 0 ? (
+             pizzaToppings.map((toppingId) => {
+        if (!toppingId) {
+            console.warn('Skipping invalid toppingId:', toppingId);
+            return null; // Skip if invalid
+        }
 
-                            if (!id) {
-                                console.warn(`Invalid toppingId: ${toppingId}`);
-                                return null;  // Skip if invalid
-                            }
+        const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
+        const topping = availableToppings.find((t) => t._id === id);
 
-                            // Find the topping by ID
-                            const topping = availableToppings.find((t) => t._id === id);
-                            if (!topping) {
-                                console.warn(`Topping with ID ${id} not found in availableToppings`);
-                                return null;  // Skip if topping not found
-                            }
+        if (!topping) {
+            console.warn(`Topping with ID ${id} not found in availableToppings`);
+            return null; // Skip if topping not found
+        }
 
-                            return (
-                                <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
-                                    {topping.name}
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => handleToppingChange(
-                                            pizzaToppings.filter((t) => t !== id)  // Remove topping
-                                        )}
-                                    >
-                                        Remove
-                                    </button>
-                                </li>
-                            );
-                        })
-                    ) : (
-                        <li className="list-group-item">No current toppings.</li>
-                    )}
+        return (
+            <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
+                {topping.name}
+                <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleToppingChange(id)}
+                >
+                    Remove
+                </button>
+            </li>
+        );
+    })
+) : (
+    <li className="list-group-item">No current toppings.</li>
+)}
+
                 </ul>
             </div>
 
