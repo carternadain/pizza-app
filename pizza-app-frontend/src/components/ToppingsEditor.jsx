@@ -20,41 +20,56 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
             setSuccessMessage('Failed to update toppings. Please try again.');
         }
     };
+    console.log('pizzaToppings (from props):', pizzaToppings);
 
     return (
+        
         <div className="mt-4">
-            <h4>Edit Toppings for Pizza</h4>
+        <h4>Edit Toppings for Pizza</h4>
+        <div className="row">
+            {/* Current Toppings Box */}
+            <div className="col-md-6">
+                <h5>Current Toppings</h5>
+                <ul className="list-group">
+                    {pizzaToppings.length > 0 ? (
+                        pizzaToppings.map((toppingId) => {
+                            // Extra debug logging
+                            console.log('toppingId from pizzaToppings:', toppingId);
+                            
+                            // Ensure ID is always a string
+                            const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
 
-            <div className="row">
-                {/* Current Toppings Box */}
-                <div className="col-md-6">
-                    <h5>Current Toppings</h5>
-                    <ul className="list-group">
-                        {pizzaToppings.length > 0 ? (
-                            pizzaToppings.map((toppingId) => {
-                                const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
-                                const topping = availableToppings.find((t) => t._id === id);
-                                if (!topping) return null;
+                            if (!id) {
+                                console.warn(`Invalid toppingId: ${toppingId}`);
+                                return null;  // Skip if invalid
+                            }
 
-                                return (
-                                    <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
-                                        {topping.name}
-                                        <button
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => handleToppingChange(
-                                                pizzaToppings.filter((t) => t !== id)  // Remove topping
-                                            )}
-                                        >
-                                            Remove
-                                        </button>
-                                    </li>
-                                );
-                            })
-                        ) : (
-                            <li className="list-group-item">No current toppings.</li>
-                        )}
-                    </ul>
-                </div>
+                            // Find the topping by ID
+                            const topping = availableToppings.find((t) => t._id === id);
+                            if (!topping) {
+                                console.warn(`Topping with ID ${id} not found in availableToppings`);
+                                return null;  // Skip if topping not found
+                            }
+
+                            return (
+                                <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
+                                    {topping.name}
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() => handleToppingChange(
+                                            pizzaToppings.filter((t) => t !== id)  // Remove topping
+                                        )}
+                                    >
+                                        Remove
+                                    </button>
+                                </li>
+                            );
+                        })
+                    ) : (
+                        <li className="list-group-item">No current toppings.</li>
+                    )}
+                </ul>
+            </div>
 
                 {/* Available Toppings Box */}
                 <div className="col-md-6">

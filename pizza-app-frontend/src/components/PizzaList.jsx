@@ -21,6 +21,7 @@ const PizzaManager = () => {
     const fetchPizzas = async () => {
         try {
             const response = await axios.get(`${API_URL}/api/pizzas`, { params: { timestamp: new Date().getTime() } });
+            console.log('API pizza response:', response.data);
             setPizzas(response.data);
             console.log('Fetched pizzas:', response.data);
         } catch (error) {
@@ -31,6 +32,7 @@ const PizzaManager = () => {
     const fetchToppings = async () => {
         try {
             const response = await axios.get(`${API_URL}/api/toppings`);
+            console.log('API toppings response:', response.data);
             setAvailableToppings(response.data);
             console.log('Fetched toppings:', response.data);
         } catch (error) {
@@ -97,6 +99,7 @@ const PizzaManager = () => {
         const updatedToppings = isSelected
             ? prev.toppings.filter((existingId) => existingId !== id)
             : [...prev.toppings, id];
+            console.log('Updated toppings:', updatedToppings);
         return { ...prev, toppings: updatedToppings };
     });
 };
