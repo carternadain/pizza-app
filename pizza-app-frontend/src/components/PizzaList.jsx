@@ -36,26 +36,6 @@ const PizzaManager = () => {
         }
     };
 
-    const addPizza = async () => {
-        if (!newPizza.trim()) return;
-        try {
-            await axios.post(`${API_URL}/api/pizzas`, { name: newPizza });
-            fetchPizzas();
-            setNewPizza('');
-        } catch (error) {
-            console.error('Error adding pizza:', error);
-        }
-    };
-
-    const deletePizza = async (id) => {
-        try {
-            await axios.delete(`${API_URL}/api/pizzas/${id}`);
-            fetchPizzas();
-        } catch (error) {
-            console.error('Error deleting pizza:', error);
-        }
-    };
-
     const updatePizza = async () => {
         if (!editPizza.name.trim()) return;
         try {
@@ -70,22 +50,8 @@ const PizzaManager = () => {
         }
     };
 
-    const updatePizzaToppings = async (uniqueToppings) => {
-        try {
-            await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
-                toppings: uniqueToppings,
-            });
-            fetchPizzas();
-            alert('Toppings successfully saved!');
-        } catch (error) {
-            console.error('Error updating pizza toppings:', error);
-            alert('Failed to save toppings.');
-        }
-    };
-
     const handleToppingChange = (newToppings) => {
-        const uniqueToppings = [...new Set(newToppings.filter(Boolean))];
-        setEditPizza((prev) => ({ ...prev, toppings: uniqueToppings }));
+        setEditPizza((prev) => ({ ...prev, toppings: newToppings }));
     };
 
     return (
@@ -100,7 +66,7 @@ const PizzaManager = () => {
                     onChange={(e) => setNewPizza(e.target.value)}
                     placeholder="Add new pizza"
                 />
-                <button className="btn btn-primary" onClick={addPizza}>
+                <button className="btn btn-primary" onClick={() => addPizza()}>
                     Add Pizza
                 </button>
             </div>
@@ -127,20 +93,17 @@ const PizzaManager = () => {
             {editPizza.id && (
                 <div className="mt-4">
                     <h3>Edit Pizza</h3>
-                    <div className="mb-3">
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={editPizza.name}
-                            onChange={(e) => setEditPizza({ ...editPizza, name: e.target.value })}
-                            placeholder="Edit pizza name"
-                        />
-                    </div>
+                    <input
+                        type="text"
+                        className="form-control mb-3"
+                        value={editPizza.name}
+                        onChange={(e) => setEditPizza({ ...editPizza, name: e.target.value })}
+                        placeholder="Edit pizza name"
+                    />
                     <ToppingsEditor
                         pizzaToppings={editPizza.toppings}
                         availableToppings={availableToppings}
                         handleToppingChange={handleToppingChange}
-                        updatePizzaToppings={updatePizzaToppings}
                     />
                     <div className="mt-3">
                         <button className="btn btn-primary" onClick={updatePizza}>
