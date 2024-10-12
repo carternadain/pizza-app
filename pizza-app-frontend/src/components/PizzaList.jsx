@@ -74,9 +74,7 @@ const PizzaManager = () => {
         }
     };
 
-    const updatePizzaToppings = async () => {
-        const uniqueToppings = [...new Set(editPizza.toppings.filter(Boolean))]; // Remove duplicate toppings
-        
+    const updatePizzaToppings = async (uniqueToppings) => {
         try {
             await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
                 toppings: uniqueToppings,  // Save only unique toppings
@@ -89,21 +87,13 @@ const PizzaManager = () => {
         }
     };
     
-    
+    const handleToppingChange = (newToppings) => {
+        const cleanedToppings = newToppings.filter(Boolean); // Remove undefined values
+        const uniqueToppings = [...new Set(cleanedToppings)]; // Ensure no duplicates
+        console.log('Updated toppings:', uniqueToppings);
 
-  const handleToppingChange = (toppingId) => {
-    const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
-
-    setEditPizza((prev) => {
-        const isSelected = prev.toppings.includes(id);
-        const updatedToppings = isSelected
-            ? prev.toppings.filter((existingId) => existingId !== id)
-            : [...prev.toppings, id];
-            console.log('Updated toppings:', updatedToppings);
-        return { ...prev, toppings: updatedToppings };
-    });
-};
-
+        setEditPizza((prev) => ({ ...prev, toppings: uniqueToppings }));
+    };
 
     console.log('Current pizzas:', pizzas);
     console.log('Available toppings:', availableToppings);
@@ -127,62 +117,50 @@ const PizzaManager = () => {
             </div>
 
             <ul className="list-group">
-                {pizzas.length > 0 ? (
-                    pizzas.map((pizza) => (
-                        <li className="list-group-item d-flex justify-content-between align-items-center" key={pizza._id}>
-                            {editPizza.id === pizza._id ? (
-                                <>
-                                    <input
-                                        type="text"
-                                        className="form-control me-2"
-                                        value={editPizza.name}
-                                        onChange={(e) => setEditPizza({ ...editPizza, name: e.target.value })}
-                                    />
-                                    <button className="btn btn-success btn-sm" onClick={updatePizza}>
-                                        Save
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    {pizza.name}
-                                    <div>
-                                    <button
-                                    className="btn btn-warning btn-sm me-2"
-                                     onClick={() => {
-                                     console.log('Editing pizza:', pizza);
-                                    setEditPizza({
-                                     id: pizza._id,
-                                     name: pizza.name,
-                                     toppings: pizza.toppings || [], // Initialize toppings properly
-                                     });
-                                     }}
-                                    >
-                                    Edit
-                                 </button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => deletePizza(pizza._id)}>
-                                            Delete
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </li>
-                    ))
-                ) : (
-                    <li className="list-group-item">No pizzas found.</li>
-                )}
+                {pizzas.map((pizza) => (
+                    <li key={pizza._id} className="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{pizza.name}</span>
+                        <div>
+                            <button
+                                className="btn btn-info btn-sm me-2"
+                                onClick={() => setEditPizza({ id: pizza._id, name: pizza.name, toppings: pizza.toppings })}
+                            >
+                                Edit
+                            </button>
+                            <button className="btn btn-danger btn-sm" onClick={() => deletePizza(pizza._id)}>
+                                Delete
+                            </button>
+                        </div>
+                    </li>
+                ))}
             </ul>
 
-            {/* Toppings Editor */}
-           {/* Toppings Editor */}
-        {editPizza.id && (
-            <ToppingsEditor
-        pizzaToppings={editPizza.toppings}
-        availableToppings={availableToppings}
-        handleToppingChange={handleToppingChange}
-        updatePizzaToppings={updatePizzaToppings}  // Pass updated function
-            />
-        )}
-     </div>
+            {editPizza.id && (
+                <div className="mt-4">
+                    <h3>Edit Pizza</h3>
+                    <div className="mb-3">
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={editPizza.name}
+                            onChange={(e) => setEditPizza({ ...editPizza, name: e.target.value })}
+                            placeholder="Edit pizza name"
+                        />
+                    </div>
+                    <ToppingsEditor
+                        pizzaToppings={editPizza.toppings}
+                        availableToppings={availableToppings}
+                        handleToppingChange={handleToppingChange}
+                        updatePizzaToppings={updatePizzaToppings}
+                    />
+                    <div className="mt-3">
+                        <button className="btn btn-primary" onClick={updatePizza}>
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

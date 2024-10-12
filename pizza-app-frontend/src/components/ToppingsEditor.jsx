@@ -3,15 +3,19 @@ import React, { useState } from 'react';
 const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleToppingChange, updatePizzaToppings }) => {
     const [successMessage, setSuccessMessage] = useState(''); // To handle success messages
 
+    // Filter out invalid topping IDs
+    const cleanedPizzaToppings = pizzaToppings.filter(Boolean);
+
     // Get toppings that can be added (not already on the pizza)
     const toppingsToAdd = availableToppings.filter(
-        (topping) => !pizzaToppings.includes(topping._id)
+        (topping) => !cleanedPizzaToppings.includes(topping._id)
     );
 
     const handleSaveToppings = async () => {
         try {
-            console.log('Saving toppings:', pizzaToppings);  // <-- Log added here
-            await updatePizzaToppings(); // Assuming this is an async call to the backend to update toppings
+            const uniqueToppings = [...new Set(cleanedPizzaToppings)]; // Ensure unique toppings only
+            console.log('Saving toppings:', uniqueToppings);  // <-- Log added here
+            await updatePizzaToppings(uniqueToppings); // Pass cleaned and unique toppings
             setSuccessMessage('Toppings updated successfully!'); // Show success message
             setTimeout(() => {
                 window.location.reload(); // Reload the page after a short delay
@@ -22,7 +26,7 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
         }
     };
 
-    console.log('pizzaToppings (from props):', pizzaToppings);  // <-- Log already added
+    console.log('pizzaToppings (from props):', cleanedPizzaToppings);  // <-- Log already added
 
     return (
         <div className="mt-4">
@@ -32,8 +36,8 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                 <div className="col-md-6">
                     <h5>Current Toppings</h5>
                     <ul className="list-group">
-                        {pizzaToppings.length > 0 ? (
-                            pizzaToppings.map((toppingId) => {
+                        {cleanedPizzaToppings.length > 0 ? (
+                            cleanedPizzaToppings.map((toppingId) => {
                                 console.log('Processing toppingId:', toppingId);  // <-- Log added here
                                 if (!toppingId) {
                                     console.warn('Skipping invalid toppingId:', toppingId);
@@ -77,8 +81,9 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                                     <button
                                         className="btn btn-success btn-sm"
                                         onClick={() => {
-                                            const newToppings = [...pizzaToppings, topping._id];
-                                            console.log('Adding toppingId:', topping._id, 'New toppings:', newToppings);  // <-- Log added here
+                                            const newToppings = cleanedPizzaToppings.filter(Boolean); // Remove any undefined values
+                                            newToppings.push(topping._id);
+                                            console.log('Adding toppingId:', topping._id, 'New toppings:', newToppings);
                                             handleToppingChange(newToppings);
                                         }}
                                     >
