@@ -148,14 +148,17 @@ const PizzaManager = () => {
                                     <div>
                                     <button
                                     className="btn btn-warning btn-sm me-2"
-                                    onClick={() => setEditPizza({
-                                    id: pizza._id,
-                                    name: pizza.name,
-                                    toppings: pizza.toppings || [], // Initialize toppings as an empty array if undefined
-                                 })}
->
-  Edit
-</button>
+                                     onClick={() => {
+                                     console.log('Editing pizza:', pizza);
+                                    setEditPizza({
+                                     id: pizza._id,
+                                     name: pizza.name,
+                                     toppings: pizza.toppings || [], // Initialize toppings properly
+                                     });
+                                     }}
+                                    >
+                                    Edit
+                                 </button>
                                         <button className="btn btn-danger btn-sm" onClick={() => deletePizza(pizza._id)}>
                                             Delete
                                         </button>

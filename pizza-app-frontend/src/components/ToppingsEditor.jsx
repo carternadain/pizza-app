@@ -10,6 +10,7 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
 
     const handleSaveToppings = async () => {
         try {
+            console.log('Saving toppings:', pizzaToppings);  // <-- Log added here
             await updatePizzaToppings(); // Assuming this is an async call to the backend to update toppings
             setSuccessMessage('Toppings updated successfully!'); // Show success message
             setTimeout(() => {
@@ -20,50 +21,50 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
             setSuccessMessage('Failed to update toppings. Please try again.');
         }
     };
-    console.log('pizzaToppings (from props):', pizzaToppings);
+
+    console.log('pizzaToppings (from props):', pizzaToppings);  // <-- Log already added
 
     return (
-        
         <div className="mt-4">
-        <h4>Edit Toppings for Pizza</h4>
-        <div className="row">
-            {/* Current Toppings Box */}
-            <div className="col-md-6">
-            <h5>Current Toppings</h5>
-            <ul className="list-group">
-            {pizzaToppings.length > 0 ? (
-             pizzaToppings.map((toppingId) => {
-        if (!toppingId) {
-            console.warn('Skipping invalid toppingId:', toppingId);
-            return null; // Skip if invalid
-        }
+            <h4>Edit Toppings for Pizza</h4>
+            <div className="row">
+                {/* Current Toppings Box */}
+                <div className="col-md-6">
+                    <h5>Current Toppings</h5>
+                    <ul className="list-group">
+                        {pizzaToppings.length > 0 ? (
+                            pizzaToppings.map((toppingId) => {
+                                console.log('Processing toppingId:', toppingId);  // <-- Log added here
+                                if (!toppingId) {
+                                    console.warn('Skipping invalid toppingId:', toppingId);
+                                    return null; // Skip if invalid
+                                }
 
-        const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
-        const topping = availableToppings.find((t) => t._id === id);
+                                const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
+                                const topping = availableToppings.find((t) => t._id === id);
 
-        if (!topping) {
-            console.warn(`Topping with ID ${id} not found in availableToppings`);
-            return null; // Skip if topping not found
-        }
+                                if (!topping) {
+                                    console.warn(`Topping with ID ${id} not found in availableToppings`);
+                                    return null; // Skip if topping not found
+                                }
 
-        return (
-            <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
-                {topping.name}
-                <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleToppingChange(id)}
-                >
-                    Remove
-                </button>
-            </li>
-        );
-    })
-) : (
-    <li className="list-group-item">No current toppings.</li>
-)}
-
-                </ul>
-            </div>
+                                return (
+                                    <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
+                                        {topping.name}
+                                        <button
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => handleToppingChange(id)}
+                                        >
+                                            Remove
+                                        </button>
+                                    </li>
+                                );
+                            })
+                        ) : (
+                            <li className="list-group-item">No current toppings.</li>
+                        )}
+                    </ul>
+                </div>
 
                 {/* Available Toppings Box */}
                 <div className="col-md-6">
@@ -75,9 +76,11 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                                     {topping.name}
                                     <button
                                         className="btn btn-success btn-sm"
-                                        onClick={() => handleToppingChange(
-                                            [...pizzaToppings, topping._id] // Add topping
-                                        )}
+                                        onClick={() => {
+                                            const newToppings = [...pizzaToppings, topping._id];
+                                            console.log('Adding toppingId:', topping._id, 'New toppings:', newToppings);  // <-- Log added here
+                                            handleToppingChange(newToppings);
+                                        }}
                                     >
                                         Add
                                     </button>
