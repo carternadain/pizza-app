@@ -71,36 +71,36 @@ const PizzaManager = () => {
             console.error('Error updating pizza:', error);
         }
     };
+
     const updatePizzaToppings = async () => {
-        // Remove duplicates from editPizza.toppings by converting to a Set and back to an array
-        const uniqueToppings = [...new Set(editPizza.toppings)];
-    
+        const uniqueToppings = [...new Set(editPizza.toppings)]; // Remove duplicate toppings
+        
         try {
             await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
                 toppings: uniqueToppings,  // Save only unique toppings
             });
             fetchPizzas();  // Reload pizzas after saving toppings
-            alert('Toppings successfully saved!');
+            alert('Toppings successfully saved!'); // Notify the user
         } catch (error) {
             console.error('Error updating pizza toppings:', error);
             alert('Failed to save toppings.');
         }
     };
     
+    
 
-    const handleToppingChange = (toppingId) => {
-        const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
+  const handleToppingChange = (toppingId) => {
+    const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
 
-        console.log('Topping ID being toggled:', id);
-        
-        setEditPizza((prev) => {
-            const isSelected = prev.toppings.includes(id);
-            const updatedToppings = isSelected
-                ? prev.toppings.filter((existingId) => existingId !== id)
-                : [...prev.toppings, id];
-            return { ...prev, toppings: updatedToppings };
-        });
-    };
+    setEditPizza((prev) => {
+        const isSelected = prev.toppings.includes(id);
+        const updatedToppings = isSelected
+            ? prev.toppings.filter((existingId) => existingId !== id)
+            : [...prev.toppings, id];
+        return { ...prev, toppings: updatedToppings };
+    });
+};
+
 
     console.log('Current pizzas:', pizzas);
     console.log('Available toppings:', availableToppings);
@@ -163,15 +163,16 @@ const PizzaManager = () => {
             </ul>
 
             {/* Toppings Editor */}
-            {editPizza.id && (
-                <ToppingsEditor
-                    pizzaToppings={editPizza.toppings}
-                    availableToppings={availableToppings}
-                    handleToppingChange={handleToppingChange}
-                    updatePizzaToppings={updatePizzaToppings}
-                />
-            )}
-        </div>
+           {/* Toppings Editor */}
+        {editPizza.id && (
+            <ToppingsEditor
+        pizzaToppings={editPizza.toppings}
+        availableToppings={availableToppings}
+        handleToppingChange={handleToppingChange}
+        updatePizzaToppings={updatePizzaToppings}  // Pass updated function
+            />
+        )}
+     </div>
     );
 };
 

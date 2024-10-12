@@ -1,19 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleToppingChange, updatePizzaToppings }) => {
-    console.log('pizzaToppings:', pizzaToppings);
-    console.log('availableToppings:', availableToppings);
+    const [successMessage, setSuccessMessage] = useState(''); // To handle success messages
 
     // Get toppings that can be added (not already on the pizza)
     const toppingsToAdd = availableToppings.filter(
         (topping) => !pizzaToppings.includes(topping._id)
     );
 
-    console.log('toppingsToAdd:', toppingsToAdd);
+    const handleSaveToppings = async () => {
+        try {
+            await updatePizzaToppings(); // Assuming this is an async call to the backend to update toppings
+            setSuccessMessage('Toppings updated successfully!'); // Show success message
+            setTimeout(() => {
+                window.location.reload(); // Reload the page after a short delay
+            }, 1500); // Give a little time to show the success message
+        } catch (error) {
+            console.error('Failed to update toppings:', error);
+            setSuccessMessage('Failed to update toppings. Please try again.');
+        }
+    };
 
     return (
         <div className="mt-4">
             <h4>Edit Toppings for Pizza</h4>
+
             <div className="row">
                 {/* Current Toppings Box */}
                 <div className="col-md-6">
@@ -21,17 +32,9 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                     <ul className="list-group">
                         {pizzaToppings.length > 0 ? (
                             pizzaToppings.map((toppingId) => {
-                                // Ensure the toppingId is always a string
                                 const id = typeof toppingId === 'object' ? toppingId._id : toppingId;
-
-                                console.log('toppingId:', id);
-
-                                // Find the topping by ID; if not found, log a message
                                 const topping = availableToppings.find((t) => t._id === id);
-                                if (!topping) {
-                                    console.log(`Topping with ID ${id} not found in availableToppings`);
-                                    return null; // Return null if topping not found
-                                }
+                                if (!topping) return null;
 
                                 return (
                                     <li key={id} className="list-group-item d-flex justify-content-between align-items-center">
@@ -58,23 +61,19 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                     <h5>Available Toppings to Add</h5>
                     <ul className="list-group">
                         {toppingsToAdd.length > 0 ? (
-                            toppingsToAdd.map((topping) => {
-                                console.log('Available topping to add:', topping);
-
-                                return (
-                                    <li key={topping._id} className="list-group-item d-flex justify-content-between align-items-center">
-                                        {topping.name}
-                                        <button
-                                            className="btn btn-success btn-sm"
-                                            onClick={() => handleToppingChange(
-                                                [...pizzaToppings, topping._id] // Add topping
-                                            )}
-                                        >
-                                            Add
-                                        </button>
-                                    </li>
-                                );
-                            })
+                            toppingsToAdd.map((topping) => (
+                                <li key={topping._id} className="list-group-item d-flex justify-content-between align-items-center">
+                                    {topping.name}
+                                    <button
+                                        className="btn btn-success btn-sm"
+                                        onClick={() => handleToppingChange(
+                                            [...pizzaToppings, topping._id] // Add topping
+                                        )}
+                                    >
+                                        Add
+                                    </button>
+                                </li>
+                            ))
                         ) : (
                             <li className="list-group-item">No toppings available to add.</li>
                         )}
@@ -84,10 +83,17 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
 
             {/* Save Button */}
             <div className="mt-3">
-                <button className="btn btn-primary" onClick={updatePizzaToppings}>
+                <button className="btn btn-primary" onClick={handleSaveToppings}>
                     Save Toppings
                 </button>
             </div>
+
+            {/* Success or Error Message */}
+            {successMessage && (
+                <div className="mt-3 alert alert-info">
+                    {successMessage}
+                </div>
+            )}
         </div>
     );
 };
