@@ -1,8 +1,14 @@
 import React from 'react';
 
 const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleToppingChange }) => {
-    // Filter out invalid topping IDs
-    const cleanedPizzaToppings = pizzaToppings.filter(Boolean);
+    // Filter out invalid topping IDs and log warnings if any are found
+    const cleanedPizzaToppings = pizzaToppings.filter((id) => {
+        if (!id) {
+            console.warn('Encountered an invalid topping ID:', id);
+            return false;
+        }
+        return true;
+    });
 
     // Get toppings that can be added (not already on the pizza)
     const toppingsToAdd = availableToppings.filter(
@@ -10,8 +16,10 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
     );
 
     const handleAddTopping = (toppingId) => {
-        const newToppings = [...cleanedPizzaToppings, toppingId]; // Add topping regardless
-        handleToppingChange(newToppings);
+        if (!cleanedPizzaToppings.includes(toppingId)) { // Avoid duplicates
+            const newToppings = [...cleanedPizzaToppings, toppingId];
+            handleToppingChange(newToppings);
+        }
     };
 
     const handleRemoveTopping = (toppingId) => {
@@ -31,7 +39,10 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
                             cleanedPizzaToppings.map((toppingId) => {
                                 const topping = availableToppings.find((t) => t._id === toppingId);
 
-                                if (!topping) return null; // Skip if topping not found
+                                if (!topping) {
+                                    console.warn('Topping not found in availableToppings:', toppingId);
+                                    return null;
+                                }
 
                                 return (
                                     <li key={toppingId} className="list-group-item d-flex justify-content-between align-items-center">

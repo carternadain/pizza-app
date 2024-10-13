@@ -40,6 +40,12 @@ const PizzaManager = () => {
     const updatePizza = async () => {
         if (!editPizza.name.trim()) return;
         try {
+            // Log data being sent
+            console.log("Updating pizza with data:", {
+                name: editPizza.name,
+                toppings: editPizza.toppings,
+            });
+
             await axios.put(`${API_URL}/api/pizzas/${editPizza.id}`, {
                 name: editPizza.name,
                 toppings: editPizza.toppings,
@@ -107,7 +113,11 @@ const PizzaManager = () => {
                         <div>
                             <button
                                 className="btn btn-info btn-sm me-2"
-                                onClick={() => setEditPizza({ id: pizza._id, name: pizza.name, toppings: pizza.toppings })}
+                                onClick={() => setEditPizza({
+                                    id: pizza._id,
+                                    name: pizza.name,
+                                    toppings: pizza.toppings || [] // Make sure toppings are set correctly
+                                })}
                             >
                                 Edit
                             </button>
