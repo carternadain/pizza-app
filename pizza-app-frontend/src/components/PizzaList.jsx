@@ -22,7 +22,11 @@ const PizzaManager = () => {
     const fetchPizzas = async () => {
         try {
             const response = await axios.get(`${API_URL}/api/pizzas`, { params: { timestamp: new Date().getTime() } });
-            setPizzas(response.data);
+            const normalizedPizzas = response.data.map(pizza => ({
+                ...pizza,
+                toppings: pizza.toppings.map(topping => typeof topping === 'object' ? topping._id : topping),
+            }));
+            setPizzas(normalizedPizzas);
         } catch (error) {
             console.error('Error fetching pizzas:', error);
         }
@@ -40,7 +44,6 @@ const PizzaManager = () => {
     const updatePizza = async () => {
         if (!editPizza.name.trim()) return;
         try {
-            // Log data being sent
             console.log("Updating pizza with data:", {
                 name: editPizza.name,
                 toppings: editPizza.toppings,
@@ -50,9 +53,9 @@ const PizzaManager = () => {
                 name: editPizza.name,
                 toppings: editPizza.toppings,
             });
-            setSuccessMessage('Pizza updated successfully!'); // Set success message
-            await fetchPizzas(); // Fetch pizzas again to reflect changes
-            setEditPizza({ id: '', name: '', toppings: [] }); // Reset editPizza
+            setSuccessMessage('Pizza updated successfully!');
+            await fetchPizzas();
+            setEditPizza({ id: '', name: '', toppings: [] });
         } catch (error) {
             console.error('Error updating pizza:', error);
         }
@@ -63,11 +66,11 @@ const PizzaManager = () => {
         try {
             await axios.post(`${API_URL}/api/pizzas`, {
                 name: newPizza,
-                toppings: [], // Set default toppings for new pizzas
+                toppings: [],
             });
-            setSuccessMessage('Pizza added successfully!'); // Set success message
-            await fetchPizzas(); // Fetch pizzas again to reflect changes
-            setNewPizza(''); // Reset newPizza
+            setSuccessMessage('Pizza added successfully!');
+            await fetchPizzas();
+            setNewPizza('');
         } catch (error) {
             console.error('Error adding pizza:', error);
         }
@@ -76,11 +79,19 @@ const PizzaManager = () => {
     const deletePizza = async (id) => {
         try {
             await axios.delete(`${API_URL}/api/pizzas/${id}`);
-            setSuccessMessage('Pizza deleted successfully!'); // Set success message
-            await fetchPizzas(); // Fetch pizzas again to reflect changes
+            setSuccessMessage('Pizza deleted successfully!');
+            await fetchPizzas();
         } catch (error) {
             console.error('Error deleting pizza:', error);
         }
+    };
+
+    const handleEditPizza = (pizza) => {
+        setEditPizza({
+            id: pizza._id,
+            name: pizza.name,
+            toppings: pizza.toppings.map(topping => typeof topping === 'object' ? topping._id : topping),
+        });
     };
 
     const handleToppingChange = (newToppings) => {
@@ -91,7 +102,7 @@ const PizzaManager = () => {
         <div className="container my-4">
             <h2 className="text-center mb-4">Manage Pizzas</h2>
 
-            {successMessage && <div className="alert alert-success">{successMessage}</div>} {/* Display success message */}
+            {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
             <div className="input-group mb-3">
                 <input
@@ -113,11 +124,7 @@ const PizzaManager = () => {
                         <div>
                             <button
                                 className="btn btn-info btn-sm me-2"
-                                onClick={() => setEditPizza({
-                                    id: pizza._id,
-                                    name: pizza.name,
-                                    toppings: pizza.toppings || [] // Make sure toppings are set correctly
-                                })}
+                                onClick={() => handleEditPizza(pizza)}
                             >
                                 Edit
                             </button>

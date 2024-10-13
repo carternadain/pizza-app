@@ -1,14 +1,10 @@
 import React from 'react';
 
 const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleToppingChange }) => {
-    // Filter out invalid topping IDs and log warnings if any are found
-    const cleanedPizzaToppings = pizzaToppings.filter((id) => {
-        if (!id) {
-            console.warn('Encountered an invalid topping ID:', id);
-            return false;
-        }
-        return true;
-    });
+    // Normalize pizzaToppings to be an array of IDs
+    const cleanedPizzaToppings = pizzaToppings.map((topping) =>
+        typeof topping === 'object' && topping._id ? topping._id : topping
+    );
 
     // Get toppings that can be added (not already on the pizza)
     const toppingsToAdd = availableToppings.filter(
