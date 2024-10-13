@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleToppingChange }) => {
-    // Normalize pizzaToppings to be an array of IDs
-    const cleanedPizzaToppings = pizzaToppings.map((topping) =>
-        typeof topping === 'object' && topping._id ? topping._id : topping
-    );
+    const [cleanedPizzaToppings, setCleanedPizzaToppings] = useState([]);
+
+    useEffect(() => {
+        // Normalize pizzaToppings to be an array of IDs
+        const normalizedToppings = pizzaToppings.map((topping) =>
+            typeof topping === 'object' && topping._id ? topping._id : topping
+        );
+        setCleanedPizzaToppings(normalizedToppings);
+    }, [pizzaToppings]);
 
     // Get toppings that can be added (not already on the pizza)
     const toppingsToAdd = availableToppings.filter(
@@ -37,7 +42,11 @@ const ToppingsEditor = ({ pizzaToppings = [], availableToppings = [], handleTopp
 
                                 if (!topping) {
                                     console.warn('Topping not found in availableToppings:', toppingId);
-                                    return null;
+                                    return (
+                                        <li key={toppingId} className="list-group-item">
+                                            Topping not found.
+                                        </li>
+                                    );
                                 }
 
                                 return (
