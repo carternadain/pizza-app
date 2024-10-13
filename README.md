@@ -53,6 +53,6 @@ To run the tests, use the following commands:
 npm test
 This will run all unit tests and component tests for the Pizza App using Jest and React Testing Library.
 
-3. Test Functio
+3. Test Function
 
-Future testing will include database testing 
+Future testing will include database testing , and more files.
