@@ -25,9 +25,9 @@ As a pizza chef, you can:
 
 ## Technologies Used
 
-- **Frontend:** React, Vite
-- **Backend:** Express, MongoDB, and body-parser
-- **Deployment:** Netlify (frontend), Heroku (backend)
+- **Frontend:** React, Vite , Bootstrap , Jest 
+- **Backend:** Express, MongoDB, and body-parser 
+- **Deployment:** Heroku (backend), (frontend)
 
 
 ## Live application 
